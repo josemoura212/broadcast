@@ -156,7 +156,7 @@ const Messages: React.FC = () => {
                         `Status: ${msg.status} | Para: ${contacts
                           .filter((c) => msg.contactIds.includes(c.id))
                           .map((c) => c.name)
-                          .join(", ")}` +
+                          .join(", ")} | ` +
                         (msg.status === "agendada" && msg.scheduledAt
                           ? `\nAgendada para: ${msg.scheduledAt}`
                           : msg.sentAt

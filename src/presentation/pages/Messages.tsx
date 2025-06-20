@@ -20,10 +20,10 @@ import {
 import AppBarComponent from "../components/AppBarComponent";
 import { useContacts } from "../hooks/useContacts";
 import { useMessages } from "../hooks/useMessages";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { useAuth } from "../context/AuthContext";
-import { db } from "../../infra/services/firebase";
+import { AddMessage } from "../../domain/usecases/AddMessage";
+import { FirebaseMessageRepository } from "../../data/repositories/FirebaseMessageRepository";
 import { formatDateTimeLocal } from "../../infra/utils/formatDateTimeLocal";
 
 const Messages: React.FC = () => {
@@ -31,9 +31,9 @@ const Messages: React.FC = () => {
   const { contacts } = useContacts(user?.uid);
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const [content, setContent] = useState("");
-  const [scheduledAt, setScheduledAt] = useState<string>("");
+  const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
   const [filter, setFilter] = useState<"enviada" | "agendada" | "all">("all");
-  const { messages, loading } = useMessages(
+  const { messages, loading, refetch } = useMessages(
     user?.uid,
     filter !== "all" ? filter : undefined
   );
@@ -41,18 +41,18 @@ const Messages: React.FC = () => {
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !content.trim() || selectedContacts.length === 0) return;
-    await addDoc(collection(db, `clients/${user.uid}/messages`), {
+    const repo = new FirebaseMessageRepository();
+    const usecase = new AddMessage(repo);
+    await usecase.execute({
+      userId: user.uid,
       content: content.trim(),
-      status: scheduledAt ? "agendada" : "enviada",
-      scheduledAt: scheduledAt
-        ? Timestamp.fromDate(new Date(scheduledAt))
-        : null,
-      sentAt: scheduledAt ? null : Timestamp.now(),
       contactIds: selectedContacts,
+      scheduledAt: scheduledAt ?? undefined,
     });
     setContent("");
     setSelectedContacts([]);
-    setScheduledAt("");
+    setScheduledAt(null);
+    refetch();
   };
 
   return (
@@ -110,10 +110,8 @@ const Messages: React.FC = () => {
 
             <DateTimePicker
               label="Agendar para (opcional)"
-              value={scheduledAt ? new Date(scheduledAt) : null}
-              onChange={(newValue) =>
-                setScheduledAt(newValue ? formatDateTimeLocal(newValue) : "")
-              }
+              value={scheduledAt}
+              onChange={(newValue) => setScheduledAt(newValue)}
               slotProps={{ textField: { fullWidth: true } }}
             />
             <Button type="submit" variant="contained" color="primary">
@@ -157,10 +155,13 @@ const Messages: React.FC = () => {
                           .filter((c) => msg.contactIds.includes(c.id))
                           .map((c) => c.name)
                           .join(", ")} | ` +
-                        (msg.status === "agendada" && msg.scheduledAt
-                          ? `\nAgendada para: ${msg.scheduledAt}`
-                          : msg.sentAt
-                          ? `\nEnviada em: ${msg.sentAt}`
+                        (msg.status === "agendada" &&
+                        msg.scheduledAt instanceof Date
+                          ? `\nAgendada para: ${formatDateTimeLocal(
+                              msg.scheduledAt
+                            )}`
+                          : msg.sentAt instanceof Date
+                          ? `\nEnviada em: ${formatDateTimeLocal(msg.sentAt)}`
                           : "")
                       }
                     />

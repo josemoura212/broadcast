@@ -9,24 +9,25 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
-import { collection, addDoc } from "firebase/firestore";
 import AppBarComponent from "../components/AppBarComponent";
 import { useAuth } from "../context/AuthContext";
 import { useConnections } from "../hooks/useConnections";
-import { db } from "../../infra/services/firebase";
+import { AddConnection } from "../../domain/usecases/AddConnection";
+import { FirebaseConnectionRepository } from "../../data/repositories/FirebaseConnectionRepository";
 
 const Connections: React.FC = () => {
   const { user } = useAuth();
   const [newConnection, setNewConnection] = useState("");
-  const { connections, loading } = useConnections(user?.uid);
+  const { connections, loading, refetch } = useConnections(user?.uid);
 
   const handleAddConnection = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newConnection.trim()) return;
-    await addDoc(collection(db, `clients/${user.uid}/connections`), {
-      name: newConnection.trim(),
-    });
+    const repo = new FirebaseConnectionRepository();
+    const usecase = new AddConnection(repo);
+    await usecase.execute(user.uid, { name: newConnection.trim() });
     setNewConnection("");
+    refetch();
   };
 
   return (

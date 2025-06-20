@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Contact } from "../../domain/models/Contact";
 import { FirebaseContactRepository } from "../../data/repositories/FirebaseContactRepository";
 import { GetContacts } from "../../domain/usecases/GetContacts";
@@ -6,6 +6,9 @@ import { GetContacts } from "../../domain/usecases/GetContacts";
 export function useContacts(userId: string | undefined) {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reload, setReload] = useState(0);
+
+  const refetch = useCallback(() => setReload((r) => r + 1), []);
 
   useEffect(() => {
     if (!userId) return;
@@ -16,7 +19,7 @@ export function useContacts(userId: string | undefined) {
       setContacts(cts);
       setLoading(false);
     });
-  }, [userId]);
+  }, [userId, reload]);
 
-  return { contacts, loading };
+  return { contacts, loading, refetch };
 }

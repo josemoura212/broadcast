@@ -9,25 +9,28 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
-import { collection, addDoc } from "firebase/firestore";
 import AppBarComponent from "../components/AppBarComponent";
 import { useContacts } from "../hooks/useContacts";
-import { db } from "../../infra/services/firebase";
 import { useAuth } from "../context/AuthContext";
+import { AddContact } from "../../domain/usecases/AddContact";
+import { FirebaseContactRepository } from "../../data/repositories/FirebaseContactRepository";
 
 const Contacts: React.FC = () => {
   const { user } = useAuth();
   const [newContact, setNewContact] = useState({ name: "", phone: "" });
-  const { contacts, loading } = useContacts(user?.uid);
+  const { contacts, loading, refetch } = useContacts(user?.uid);
 
   const handleAddContact = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newContact.name.trim() || !newContact.phone.trim()) return;
-    await addDoc(collection(db, `clients/${user.uid}/contacts`), {
+    const repo = new FirebaseContactRepository();
+    const usecase = new AddContact(repo);
+    await usecase.execute(user.uid, {
       name: newContact.name.trim(),
       phone: newContact.phone.trim(),
     });
     setNewContact({ name: "", phone: "" });
+    refetch();
   };
 
   return (

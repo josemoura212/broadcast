@@ -8,9 +8,21 @@ export class FirebaseMessageRepository implements MessageRepository {
     const snapshot = await getDocs(
       collection(db, `clients/${userId}/messages`)
     );
-    return snapshot.docs.map(
-      (doc) => ({ id: doc.id, ...doc.data() } as Message)
-    );
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        sentAt:
+          data.sentAt && typeof data.sentAt.toDate === "function"
+            ? data.sentAt.toDate()
+            : undefined,
+        scheduledAt:
+          data.scheduledAt && typeof data.scheduledAt.toDate === "function"
+            ? data.scheduledAt.toDate()
+            : undefined,
+      } as Message;
+    });
   }
 
   async addMessage(params: {

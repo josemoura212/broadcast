@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
-import { db } from "../../infra/services/firebase";
 import { Contact } from "../../domain/models/Contact";
+import { FirebaseContactRepository } from "../../data/repositories/FirebaseContactRepository";
+import { GetContacts } from "../../domain/usecases/GetContacts";
 
 export function useContacts(userId: string | undefined) {
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -9,22 +9,13 @@ export function useContacts(userId: string | undefined) {
 
   useEffect(() => {
     if (!userId) return;
-
-    const q = query(
-      collection(db, `clients/${userId}/contacts`),
-      orderBy("name")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setContacts(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as { name: string; phone: string }),
-        }))
-      );
+    setLoading(true);
+    const repo = new FirebaseContactRepository();
+    const usecase = new GetContacts(repo);
+    usecase.execute(userId).then((cts) => {
+      setContacts(cts);
       setLoading(false);
     });
-    return () => unsubscribe();
   }, [userId]);
 
   return { contacts, loading };

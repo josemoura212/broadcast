@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { db } from "../../infra/services/firebase";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { Connection } from "../../domain/models/Connection";
+import { FirebaseConnectionRepository } from "../../data/repositories/FirebaseConnectionRepository";
+import { GetConnections } from "../../domain/usecases/GetConnections";
 
 export function useConnections(userId: string | undefined) {
   const [connections, setConnections] = useState<Connection[]>([]);
@@ -9,20 +9,13 @@ export function useConnections(userId: string | undefined) {
 
   useEffect(() => {
     if (!userId) return;
-    const q = query(
-      collection(db, `clients/${userId}/connections`),
-      orderBy("name")
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setConnections(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as { name: string }),
-        }))
-      );
+    setLoading(true);
+    const repo = new FirebaseConnectionRepository();
+    const usecase = new GetConnections(repo);
+    usecase.execute(userId).then((conns) => {
+      setConnections(conns);
       setLoading(false);
     });
-    return () => unsubscribe();
   }, [userId]);
 
   return { connections, loading };

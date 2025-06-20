@@ -10,32 +10,6 @@
       "functions"
     ]
   },
-  "emulators": {
-    "firestore": {
-      "host": "127.0.0.1",
-      "port": "5555"
-    },
-    "functions": {
-      "host": "127.0.0.1",
-      "port": 5001
-    },
-    "apphosting": {
-      "port": 5002,
-      "rootDirectory": "./",
-      "startCommand": "npm run dev"
-    },
-    "pubsub": {
-      "host": "127.0.0.1",
-      "port": 8086
-    },
-    "ui": {
-      "enabled": true
-    },
-    "singleProjectMode": true,
-    "auth": {
-      "port": 9099
-    }
-  },
   "functions": [
     {
       "source": "functions",
@@ -57,5 +31,13 @@
     "location": "nam5",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": "build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
   }
 }

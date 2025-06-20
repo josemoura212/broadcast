@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "broadcast-9f796"
-  }
+    "broadcast": "broadcast2-60878",
+    "default": "broadcast2-60878"
+  },
+  "targets": {},
+  "etags": {}
 }

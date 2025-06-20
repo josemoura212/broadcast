@@ -152,17 +152,17 @@ const Messages: React.FC = () => {
                   <ListItem key={msg.id} divider>
                     <MuiListItemText
                       primary={msg.content}
-                      secondary={`Status: ${msg.status} | Para: ${contacts
-                        .filter((c) => msg.contactIds.includes(c.id))
-                        .map((c) => c.name)
-                        .join(", ")}
-                          ${
-                            msg.status === "agendada" && msg.scheduledAt
-                              ? "Agendada para: " + msg.scheduledAt
-                              : msg.sentAt
-                              ? "Enviada em: " + msg.sentAt
-                              : ""
-                          }`}
+                      secondary={
+                        `Status: ${msg.status} | Para: ${contacts
+                          .filter((c) => msg.contactIds.includes(c.id))
+                          .map((c) => c.name)
+                          .join(", ")}` +
+                        (msg.status === "agendada" && msg.scheduledAt
+                          ? `\nAgendada para: ${msg.scheduledAt}`
+                          : msg.sentAt
+                          ? `\nEnviada em: ${msg.sentAt}`
+                          : "")
+                      }
                     />
                   </ListItem>
                 ))}

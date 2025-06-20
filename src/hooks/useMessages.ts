@@ -8,6 +8,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { Message } from "../types";
+import { formatDateBr } from "../utils/formatDate";
 
 export function useMessages(
   userId: string | undefined,
@@ -41,12 +42,12 @@ export function useMessages(
             ...data,
             sentAt:
               data.sentAt && typeof data.sentAt.toDate === "function"
-                ? data.sentAt.toDate()
-                : null,
+                ? formatDateBr(data.sentAt.toDate())
+                : "",
             scheduledAt:
               data.scheduledAt && typeof data.scheduledAt.toDate === "function"
-                ? data.scheduledAt.toDate()
-                : null,
+                ? formatDateBr(data.scheduledAt.toDate())
+                : "",
           };
         })
       );

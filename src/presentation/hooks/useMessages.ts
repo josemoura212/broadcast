@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Message } from "../../domain/models/Message";
 import { FirebaseMessageRepository } from "../../data/repositories/FirebaseMessageRepository";
 import { GetMessages } from "../../domain/usecases/GetMessages";
@@ -10,12 +10,15 @@ export function useMessages(
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [reload, setReload] = useState(0);
+  const isFirstLoad = useRef(true);
 
   const refetch = useCallback(() => setReload((r) => r + 1), []);
 
   useEffect(() => {
     if (!userId) return;
-    setLoading(true);
+    if (isFirstLoad.current) {
+      setLoading(true);
+    }
     const repo = new FirebaseMessageRepository();
     const usecase = new GetMessages(repo);
     usecase.execute(userId).then((msgs) => {
@@ -41,6 +44,7 @@ export function useMessages(
         }))
       );
       setLoading(false);
+      isFirstLoad.current = false;
     });
   }, [userId, status, reload]);
 

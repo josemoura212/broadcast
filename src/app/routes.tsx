@@ -3,9 +3,9 @@ import PrivateRoute from "./routes/PrivateRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
-import ConnectionPage from "./connections/page/ConnectionsPage";
+import ConnectionPage from "./connection/page/ConnectionPage";
 import ContactPage from "./contact/page/ContactPage";
-import MessagePage from "./messages/page/MessagePage";
+import MessagePage from "./message/page/MessagePage";
 
 export function AppRoutes() {
   return (

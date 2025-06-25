@@ -6,7 +6,6 @@ import {
   Button,
   List,
   ListItem,
-  ListItemText,
 } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -25,6 +24,8 @@ import {
 import { db } from "../../../infra/services/firebase";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import DefaultMenu from "../../components/DefaultMenu";
+import InlineEditFields from "../../components/InlineEditFields";
+import ListItemEditDelete from "../../components/ListItemEditDelete";
 
 const ConnectionPage: React.FC = () => {
   const { user } = useAuth();
@@ -116,55 +117,22 @@ const ConnectionPage: React.FC = () => {
           <Box sx={{ maxHeight: "60vh", overflowY: "auto" }}>
             <List>
               {connections.map((conn) => (
-                <ListItem key={conn.id} divider sx={{ mb: 1, py: 2 }}>
+                <ListItem key={conn.id} divider>
                   {editingId === conn.id ? (
-                    <>
-                      <TextField
-                        value={editingName}
-                        onChange={(e) => setEditingName(e.target.value)}
-                        size="small"
-                        sx={{ mr: 1, flex: 1 }}
-                        fullWidth
-                      />
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        sx={{ mr: 1 }}
-                        onClick={handleSaveEdit}
-                      >
-                        Salvar
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="inherit"
-                        size="small"
-                        onClick={handleCancelEdit}
-                      >
-                        Cancelar
-                      </Button>
-                    </>
+                    <InlineEditFields
+                      fields={[
+                        { label: "Nome", name: "name", value: editingName },
+                      ]}
+                      onChange={(name, value) => setEditingName(value)}
+                      onSave={handleSaveEdit}
+                      onCancel={handleCancelEdit}
+                    />
                   ) : (
-                    <>
-                      <ListItemText primary={conn.name} />
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        sx={{ mr: 1 }}
-                        onClick={() => handleStartEdit(conn.id, conn.name)}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        size="small"
-                        onClick={() => setConfirmDeleteId(conn.id)}
-                      >
-                        Remover
-                      </Button>
-                    </>
+                    <ListItemEditDelete
+                      primary={conn.name}
+                      onEdit={() => handleStartEdit(conn.id, conn.name)}
+                      onDelete={() => setConfirmDeleteId(conn.id)}
+                    />
                   )}
                 </ListItem>
               ))}

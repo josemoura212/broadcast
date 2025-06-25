@@ -6,7 +6,6 @@ import {
   Button,
   List,
   ListItem,
-  ListItemText,
 } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -25,6 +24,8 @@ import { useSnapshot } from "../../hooks/global-hooks";
 import { db } from "../../../infra/services/firebase";
 import DefaultMenu from "../../components/DefaultMenu";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import InlineEditFields from "../../components/InlineEditFields";
+import ListItemEditDelete from "../../components/ListItemEditDelete";
 
 const ContactPage: React.FC = () => {
   const { user } = useAuth();
@@ -139,83 +140,36 @@ const ContactPage: React.FC = () => {
           <Box sx={{ maxHeight: "60vh", overflowY: "auto" }}>
             <List>
               {contacts.map((contact) => (
-                <ListItem key={contact.id} divider sx={{ mb: 1, py: 2 }}>
+                <ListItem key={contact.id} divider>
                   {editingId === contact.id ? (
-                    <>
-                      <TextField
-                        label="Nome"
-                        value={editingContact.name}
-                        onChange={(e) =>
-                          setEditingContact((c) => ({
-                            ...c,
-                            name: e.target.value,
-                          }))
-                        }
-                        size="small"
-                        sx={{ mr: 1, flex: 1 }}
-                        fullWidth
-                      />
-                      <TextField
-                        label="Telefone"
-                        value={editingContact.phone}
-                        onChange={(e) =>
-                          setEditingContact((c) => ({
-                            ...c,
-                            phone: e.target.value,
-                          }))
-                        }
-                        size="small"
-                        sx={{ mr: 1, flex: 1 }}
-                        fullWidth
-                      />
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        sx={{ mr: 1 }}
-                        onClick={handleSaveEdit}
-                      >
-                        Salvar
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="inherit"
-                        size="small"
-                        onClick={handleCancelEdit}
-                      >
-                        Cancelar
-                      </Button>
-                    </>
+                    <InlineEditFields
+                      fields={[
+                        {
+                          label: "Nome",
+                          name: "name",
+                          value: editingContact.name,
+                        },
+                        {
+                          label: "Telefone",
+                          name: "phone",
+                          value: editingContact.phone,
+                        },
+                      ]}
+                      onChange={(name, value) =>
+                        setEditingContact((c) => ({ ...c, [name]: value }))
+                      }
+                      onSave={handleSaveEdit}
+                      onCancel={handleCancelEdit}
+                    />
                   ) : (
-                    <>
-                      <ListItemText
-                        primary={contact.name}
-                        secondary={contact.phone}
-                      />
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        sx={{ mr: 1 }}
-                        onClick={() =>
-                          handleStartEdit(
-                            contact.id,
-                            contact.name,
-                            contact.phone
-                          )
-                        }
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        size="small"
-                        onClick={() => setConfirmDeleteId(contact.id)}
-                      >
-                        Remover
-                      </Button>
-                    </>
+                    <ListItemEditDelete
+                      primary={contact.name}
+                      secondary={contact.phone}
+                      onEdit={() =>
+                        handleStartEdit(contact.id, contact.name, contact.phone)
+                      }
+                      onDelete={() => setConfirmDeleteId(contact.id)}
+                    />
                   )}
                 </ListItem>
               ))}

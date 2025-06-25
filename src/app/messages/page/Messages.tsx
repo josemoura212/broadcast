@@ -33,7 +33,6 @@ import {
 import { db } from "../../../infra/services/firebase";
 import { Contact } from "../../contact/domain/models/Contact";
 import { useSnapshot } from "../../hooks/global-hooks";
-import { fi } from "date-fns/locale";
 
 const Messages: React.FC = () => {
   const { user } = useAuth();
@@ -52,11 +51,6 @@ const Messages: React.FC = () => {
   );
 
   const { state: contacts } = useSnapshot<Contact>(refContacts);
-  // const { messages, loading, refetch } = useMessages(
-  //   user?.uid,
-  //   filter !== "all" ? filter : undefined
-  // );
-
   const refMessages = useMemo(() => {
     const messagesRef = collection(
       db,
@@ -72,7 +66,7 @@ const Messages: React.FC = () => {
     }
 
     return query(messagesRef, orderBy("sentAt", "desc"));
-  }, [user?.uid]);
+  }, [user?.uid, filter]);
 
   const { state: messages, loading } = useSnapshot<Message>(refMessages);
 
@@ -149,6 +143,7 @@ const Messages: React.FC = () => {
               value={scheduledAt}
               onChange={(newValue) => setScheduledAt(newValue)}
               slotProps={{ textField: { fullWidth: true } }}
+              minDateTime={new Date()}
             />
             <Button type="submit" variant="contained" color="primary">
               {scheduledAt ? "Agendar Mensagem" : "Enviar Mensagem"}

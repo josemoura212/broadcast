@@ -1,0 +1,20 @@
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../../../../infra/services/firebase";
+
+export interface Contact {
+  id: string;
+  name: string;
+  phone: string;
+}
+
+export async function getContacts(userId: string): Promise<Contact[]> {
+  const snapshot = await getDocs(collection(db, `clients/${userId}/contacts`));
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Contact));
+}
+
+export async function addContact(
+  userId: string,
+  contact: Omit<Contact, "id">
+): Promise<void> {
+  await addDoc(collection(db, `clients/${userId}/contacts`), contact);
+}

@@ -1,11 +1,11 @@
 import { Routes, Route } from "react-router-dom";
-import PrivateRoute from "../presentation/routes/PrivateRoute";
-import Login from "../presentation/pages/Login";
-import Register from "../presentation/pages/Register";
-import Home from "../presentation/pages/Home";
-import Connections from "../presentation/pages/Connections";
-import Contacts from "../presentation/pages/Contacts";
-import Messages from "../presentation/pages/Messages";
+import PrivateRoute from "./routes/PrivateRoute";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Home from "./pages/Home";
+import ConnectionPage from "./connections/page/ConnectionsPage";
+import ContactPage from "./contact/page/Contacts";
+import Messages from "./messages/page/Messages";
 
 export function AppRoutes() {
   return (
@@ -14,8 +14,8 @@ export function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route element={<PrivateRoute />}>
         <Route path="/" element={<Home />} />
-        <Route path="/connections" element={<Connections />} />
-        <Route path="/contacts" element={<Contacts />} />
+        <Route path="/connections" element={<ConnectionPage />} />
+        <Route path="/contacts" element={<ContactPage />} />
         <Route path="/messages" element={<Messages />} />
       </Route>
     </Routes>

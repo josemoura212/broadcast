@@ -32,7 +32,6 @@ const ConnectionPage: React.FC = () => {
   const [newConnection, setNewConnection] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
-  const [newConnectionError, setNewConnectionError] = useState("");
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const ref = useMemo(
@@ -51,11 +50,8 @@ const ConnectionPage: React.FC = () => {
   const handleAddConnection = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newConnection.trim()) {
-      setNewConnectionError("O nome da conexão é obrigatório.");
       return;
     }
-
-    setNewConnectionError("");
     await addConnection(user.uid, newConnection.trim());
     setNewConnection("");
   };
@@ -104,8 +100,7 @@ const ConnectionPage: React.FC = () => {
             onChange={(e) => setNewConnection(e.target.value)}
             size="small"
             fullWidth
-            error={!!newConnectionError}
-            helperText={newConnectionError}
+            required
           />
           <Button type="submit" variant="contained" color="primary">
             Adicionar

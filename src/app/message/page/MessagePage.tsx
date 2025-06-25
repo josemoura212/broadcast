@@ -13,13 +13,11 @@ import {
   OutlinedInput,
   List,
   ListItem,
-  ListItemText as MuiListItemText,
   Stack,
 } from "@mui/material";
 
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { useAuth } from "../../context/AuthContext";
-import { formatDateTimeLocal } from "../../../infra/utils/formatDateTimeLocal";
 import {
   collection,
   CollectionReference,
@@ -31,7 +29,17 @@ import { db } from "../../../infra/services/firebase";
 import { Contact, getContacts } from "../../contact/domain/models/ContactModel";
 import { useSnapshot } from "../../hooks/global-hooks";
 import DefaultMenu from "../../components/DefaultMenu";
-import { addMessage, Message } from "../domain/models/MessageModel";
+import {
+  addMessage,
+  Message,
+  updateMessage,
+  deleteMessage,
+} from "../domain/models/MessageModel";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import DialogEditingMessage from "../components/DialogEditingMessage";
+import ListItemEditDelete from "../../components/ListItemEditDelete";
+import { toDate } from "../../../infra/utils/to-date";
+import { formatDateTimeLocal } from "../../../infra/utils/format-date-time-local";
 
 const MessagePage: React.FC = () => {
   const { user } = useAuth();
@@ -40,6 +48,18 @@ const MessagePage: React.FC = () => {
   const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
   const [filter, setFilter] = useState<"enviada" | "agendada" | "all">("all");
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingMessage, setEditingMessage] = useState<{
+    content: string;
+    scheduledAt: Date | null;
+    contactIds: string[];
+  }>({
+    content: "",
+    scheduledAt: null,
+    contactIds: [],
+  });
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [editError, setEditError] = useState<string>("");
 
   useEffect(() => {
     if (user?.uid) {
@@ -57,11 +77,11 @@ const MessagePage: React.FC = () => {
       return query(
         messagesRef,
         where("status", "==", filter),
-        orderBy(filter === "agendada" ? "scheduledAt" : "sentAt", "desc")
+        orderBy("createdAt", "desc")
       );
     }
 
-    return query(messagesRef, orderBy("sentAt", "desc"));
+    return query(messagesRef, orderBy("createdAt", "desc"));
   }, [user?.uid, filter]);
 
   const { state: messages, loading } = useSnapshot<Message>(refMessages);
@@ -79,6 +99,60 @@ const MessagePage: React.FC = () => {
     setContent("");
     setSelectedContacts([]);
     setScheduledAt(null);
+  };
+
+  const handleStartEdit = (msg: Message) => {
+    setEditingId(msg.id);
+    setEditingMessage({
+      content: msg.content,
+      scheduledAt: toDate(msg.scheduledAt) ?? null,
+      contactIds: msg.contactIds ?? [],
+    });
+    setEditError("");
+  };
+
+  const handleEditChange = (
+    fields: Partial<{
+      content: string;
+      scheduledAt: Date | null;
+      contactIds: string[];
+    }>
+  ) => {
+    setEditingMessage((prev) => ({ ...prev, ...fields }));
+  };
+
+  const handleSaveEdit = async () => {
+    if (
+      !user ||
+      !editingId ||
+      !editingMessage.content.trim() ||
+      editingMessage.contactIds.length === 0
+    )
+      return;
+    try {
+      await updateMessage(user.uid, editingId, {
+        content: editingMessage.content.trim(),
+        scheduledAt: editingMessage.scheduledAt ?? undefined,
+        contactIds: editingMessage.contactIds,
+      });
+      setEditingId(null);
+      setEditingMessage({ content: "", scheduledAt: null, contactIds: [] });
+      setEditError("");
+    } catch (e: any) {
+      setEditError(e.message || "Erro ao editar mensagem");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditingMessage({ content: "", scheduledAt: null, contactIds: [] });
+    setEditError("");
+  };
+
+  const handleRemoveMessage = async (id: string) => {
+    if (!user) return;
+    await deleteMessage(user.uid, id);
+    setConfirmDeleteId(null);
   };
 
   return (
@@ -100,6 +174,7 @@ const MessagePage: React.FC = () => {
             <InputLabel>Contatos</InputLabel>
             <Select
               multiple
+              required
               value={selectedContacts}
               onChange={(e) => setSelectedContacts(e.target.value as string[])}
               input={<OutlinedInput label="Contatos" />}
@@ -167,11 +242,11 @@ const MessagePage: React.FC = () => {
         {loading ? (
           <Typography>Carregando...</Typography>
         ) : (
-          <Box sx={{ maxHeight: "40vh", overflowY: "auto" }}>
+          <Box sx={{ overflowY: "auto" }}>
             <List>
               {messages.map((msg) => (
                 <ListItem key={msg.id} divider>
-                  <MuiListItemText
+                  <ListItemEditDelete
                     primary={msg.content}
                     secondary={
                       `Status: ${msg.status} | Para: ${contacts
@@ -184,6 +259,14 @@ const MessagePage: React.FC = () => {
                           )}`
                         : `\nEnviada em: ${formatDateTimeLocal(msg.sentAt)}`)
                     }
+                    {...(msg.status === "agendada"
+                      ? {
+                          onEdit: () => handleStartEdit(msg),
+                          editLabel: "Editar",
+                        }
+                      : {})}
+                    onDelete={() => setConfirmDeleteId(msg.id)}
+                    deleteLabel="Remover"
                   />
                 </ListItem>
               ))}
@@ -195,6 +278,33 @@ const MessagePage: React.FC = () => {
             </List>
           </Box>
         )}
+        <ConfirmDialog
+          open={!!confirmDeleteId}
+          title="Confirmar remoção"
+          message="Tem certeza que deseja remover esta mensagem? Essa ação não pode ser desfeita."
+          onClose={() => setConfirmDeleteId(null)}
+          onConfirm={() => handleRemoveMessage(confirmDeleteId!)}
+          confirmText="Remover"
+          confirmColor="error"
+        />
+        {editError && (
+          <Typography color="error" variant="body2" mt={1}>
+            {editError}
+          </Typography>
+        )}
+        <DialogEditingMessage
+          open={!!editingId}
+          value={editingMessage}
+          contacts={contacts}
+          onChange={handleEditChange}
+          onClose={handleCancelEdit}
+          onSave={handleSaveEdit}
+          saving={false}
+          error={editError}
+          agendada={
+            messages.find((m) => m.id === editingId)?.status === "agendada"
+          }
+        />
       </DefaultMenu>
     </>
   );

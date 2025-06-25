@@ -33,7 +33,6 @@ const ContactPage: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContact, setEditingContact] = useState({ name: "", phone: "" });
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const [newContactError, setNewContactError] = useState("");
 
   const ref = useMemo(
     () =>
@@ -51,10 +50,8 @@ const ContactPage: React.FC = () => {
   const handleAddContact = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newContact.name.trim() || !newContact.phone.trim()) {
-      setNewContactError("Nome e telefone são obrigatórios.");
       return;
     }
-    setNewContactError("");
     await addContact(user.uid, {
       name: newContact.name.trim(),
       phone: newContact.phone.trim(),
@@ -117,18 +114,18 @@ const ContactPage: React.FC = () => {
             }
             size="small"
             fullWidth
-            error={!!newContactError && !newContact.name.trim()}
+            required
           />
           <TextField
             label="Telefone"
             value={newContact.phone}
-            onChange={(e) =>
-              setNewContact((c) => ({ ...c, phone: e.target.value }))
-            }
+            onChange={(e) => {
+              const onlyNumbers = e.target.value.replace(/\D/g, "");
+              setNewContact((c) => ({ ...c, phone: onlyNumbers }));
+            }}
             size="small"
             fullWidth
-            error={!!newContactError && !newContact.phone.trim()}
-            helperText={newContactError}
+            required
           />
           <Button type="submit" variant="contained" color="primary">
             Adicionar

@@ -22,13 +22,10 @@ export async function getConnections(userId: string): Promise<Connection[]> {
   );
 }
 
-export async function addConnection({
-  userId,
-  connectionName,
-}: {
-  userId: string;
-  connectionName: string;
-}): Promise<void> {
+export async function addConnection(
+  userId: string,
+  connectionName: string
+): Promise<void> {
   await addDoc(collection(db, `clients/${userId}/connections`), {
     name: connectionName,
   });
@@ -48,11 +45,11 @@ export async function deleteConnection(
 export async function updateConnection(
   userId: string,
   connectionId: string,
-  connection_name: string
+  connectionName: string
 ): Promise<void> {
   const docref = doc(
     collection(db, `clients/${userId}/connections`),
     connectionId
   );
-  await updateDoc(docref, { name: connection_name });
+  await updateDoc(docref, { name: connectionName });
 }

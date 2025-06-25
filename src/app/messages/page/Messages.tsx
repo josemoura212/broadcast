@@ -31,7 +31,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../../infra/services/firebase";
-import { Contact } from "../../contact/domain/models/Contact";
+import { Contact } from "../../contact/domain/models/ContactModel";
 import { useSnapshot } from "../../hooks/global-hooks";
 
 const Messages: React.FC = () => {

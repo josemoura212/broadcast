@@ -4,8 +4,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import ConnectionPage from "./connections/page/ConnectionsPage";
-import ContactPage from "./contact/page/Contacts";
 import Messages from "./messages/page/Messages";
+import ContactPage from "./contact/page/ContactPage";
 
 export function AppRoutes() {
   return (

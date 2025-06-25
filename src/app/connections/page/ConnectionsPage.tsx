@@ -2,7 +2,6 @@ import React, { useMemo, useState } from "react";
 import {
   Box,
   Typography,
-  Paper,
   TextField,
   Button,
   List,
@@ -10,7 +9,6 @@ import {
   ListItemText,
 } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
-import AppBarComponent from "../../components/AppBarComponent";
 import {
   addConnection,
   Connection,

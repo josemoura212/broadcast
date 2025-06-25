@@ -4,8 +4,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import ConnectionPage from "./connections/page/ConnectionsPage";
-import Messages from "./messages/page/Messages";
 import ContactPage from "./contact/page/ContactPage";
+import MessagePage from "./messages/page/MessagePage";
 
 export function AppRoutes() {
   return (
@@ -16,7 +16,7 @@ export function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/connections" element={<ConnectionPage />} />
         <Route path="/contacts" element={<ContactPage />} />
-        <Route path="/messages" element={<Messages />} />
+        <Route path="/messages" element={<MessagePage />} />
       </Route>
     </Routes>
   );

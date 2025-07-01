@@ -1,4 +1,4 @@
-import { Box, Tooltip } from "@mui/material";
+import Box from "@mui/material/Box";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface DrawerItemProps {
@@ -21,46 +21,40 @@ export function DrawerItem(props: DrawerItemProps) {
   };
 
   return (
-    <Tooltip
-      title={label}
-      placement="right"
-      disableHoverListener={isExpanded || isPinned}
+    <Box
+      onClick={handleClick}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        p: 0.5,
+        borderRadius: 1,
+        cursor: "pointer",
+        bgcolor: isActive ? "primary.light" : "transparent",
+      }}
     >
       <Box
-        onClick={handleClick}
         sx={{
           display: "flex",
           alignItems: "center",
-          p: 1,
-          borderRadius: 1,
-          cursor: "pointer",
-          bgcolor: isActive ? "primary.light" : "transparent",
+          justifyContent: "center",
+          width: 40,
+          height: 40,
+          color: isActive ? "primary.contrastText" : "primary.main",
         }}
       >
+        {icon}
+      </Box>
+      {(isExpanded || isPinned) && (
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: 40,
-            height: 40,
-            color: isActive ? "primary.contrastText" : "primary.main",
+            ml: 2,
+            fontWeight: 500,
+            color: isActive ? "primary.contrastText" : "text.primary",
           }}
         >
-          {icon}
+          {label}
         </Box>
-        {(isExpanded || isPinned) && (
-          <Box
-            sx={{
-              ml: 2,
-              fontWeight: 500,
-              color: isActive ? "primary.contrastText" : "text.primary",
-            }}
-          >
-            {label}
-          </Box>
-        )}
-      </Box>
-    </Tooltip>
+      )}
+    </Box>
   );
 }

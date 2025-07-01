@@ -1,5 +1,5 @@
 import { Box, Button, Paper, Typography, Stack } from "@mui/material";
-import AppBarComponent from "../components/AppBarComponent";
+import { AppBar } from "../components/app-bar";
 import { useNavigate } from "react-router-dom";
 
 export function Home() {
@@ -7,7 +7,7 @@ export function Home() {
 
   return (
     <>
-      <AppBarComponent />
+      <AppBar />
       <Box maxWidth={400} mx="auto" mt={6}>
         <Paper sx={{ p: 4, textAlign: "center" }}>
           <Typography variant="h5" mb={3}>

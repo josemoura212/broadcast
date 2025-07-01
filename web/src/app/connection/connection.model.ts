@@ -6,7 +6,7 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../../../infra/services/firebase";
+import { db } from "../../infra/services/firebase";
 
 export interface Connection {
   id: string;

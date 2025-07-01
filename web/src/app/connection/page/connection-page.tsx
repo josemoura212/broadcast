@@ -7,14 +7,14 @@ import {
   List,
   ListItem,
 } from "@mui/material";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/auth-context";
 import {
   addConnection,
   Connection,
   deleteConnection,
   updateConnection,
-} from "../domain/models/ConnectionModel";
-import { useSnapshot } from "../../hooks/global-hooks";
+} from "../connection.model";
+import { useSnapshot } from "../../hooks/firestore-hooks";
 import {
   collection,
   CollectionReference,
@@ -27,7 +27,7 @@ import DefaultMenu from "../../components/DefaultMenu";
 import InlineEditFields from "../../components/InlineEditFields";
 import ListItemEditDelete from "../../components/ListItemEditDelete";
 
-const ConnectionPage: React.FC = () => {
+export function ConnectionPage() {
   const { user } = useAuth();
   const [newConnection, setNewConnection] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -111,26 +111,28 @@ const ConnectionPage: React.FC = () => {
         ) : (
           <Box sx={{ maxHeight: "60vh", overflowY: "auto" }}>
             <List>
-              {connections.map((conn) => (
-                <ListItem key={conn.id} divider>
-                  {editingId === conn.id ? (
+              {connections.map((conn) =>
+                editingId === conn.id ? (
+                  <ListItem key={conn.id} divider>
                     <InlineEditFields
                       fields={[
                         { label: "Nome", name: "name", value: editingName },
                       ]}
-                      onChange={(name, value) => setEditingName(value)}
+                      onChange={(value) => setEditingName(value)}
                       onSave={handleSaveEdit}
                       onCancel={handleCancelEdit}
                     />
-                  ) : (
-                    <ListItemEditDelete
-                      primary={conn.name}
-                      onEdit={() => handleStartEdit(conn.id, conn.name)}
-                      onDelete={() => setConfirmDeleteId(conn.id)}
-                    />
-                  )}
-                </ListItem>
-              ))}
+                  </ListItem>
+                ) : (
+                  <ListItemEditDelete
+                    key={conn.id}
+                    primary={conn.name}
+                    onEdit={() => handleStartEdit(conn.id, conn.name)}
+                    onDelete={() => setConfirmDeleteId(conn.id)}
+                    divider={true}
+                  />
+                )
+              )}
               {connections.length === 0 && (
                 <Typography variant="body2" color="text.secondary">
                   Nenhuma conexão cadastrada.
@@ -151,6 +153,4 @@ const ConnectionPage: React.FC = () => {
       />
     </>
   );
-};
-
-export default ConnectionPage;
+}

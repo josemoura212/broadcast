@@ -1,5 +1,4 @@
-import React from "react";
-import AppBar from "@mui/material/AppBar";
+import { AppBar as MuiAppBar } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -7,7 +6,7 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../infra/services/firebase";
 
-const AppBarComponent: React.FC = () => {
+export function AppBar() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -16,7 +15,7 @@ const AppBarComponent: React.FC = () => {
   };
 
   return (
-    <AppBar position="static">
+    <MuiAppBar position="static">
       <Toolbar>
         <Button
           color="inherit"
@@ -42,8 +41,6 @@ const AppBarComponent: React.FC = () => {
           </Typography>
         </Button>
       </Toolbar>
-    </AppBar>
+    </MuiAppBar>
   );
-};
-
-export default AppBarComponent;
+}

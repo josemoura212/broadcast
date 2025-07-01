@@ -1,7 +1,7 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes";
 import { darkTheme } from "./theme";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./context/auth-context";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { ptBR } from "date-fns/locale";

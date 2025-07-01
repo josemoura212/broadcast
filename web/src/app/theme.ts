@@ -1,12 +1,10 @@
 import { createTheme } from "@mui/material";
 
-export function darkTheme() {
-  return createTheme({
-    palette: {
-      mode: "dark",
-      primary: {
-        main: "#028C2EFF",
-      },
+export const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: "#028C2EFF",
     },
-  });
-}
+  },
+});

@@ -6,7 +6,7 @@ import {
   deleteDoc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../../../infra/services/firebase";
+import { db } from "../../infra/services/firebase";
 
 export interface Contact {
   id: string;

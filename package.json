@@ -15,5 +15,8 @@
     "firebase:deploy:web": "firebase deploy --only hosting",
     "firebase:deploy:functions": "firebase deploy --only functions"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@mui/icons-material": "^7.2.0"
+  }
 }

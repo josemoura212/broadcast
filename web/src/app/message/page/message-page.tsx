@@ -12,12 +12,11 @@ import {
   ListItemText,
   OutlinedInput,
   List,
-  ListItem,
   Stack,
 } from "@mui/material";
 
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/auth-context";
 import {
   collection,
   CollectionReference,
@@ -25,9 +24,8 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db } from "../../../infra/services/firebase";
-import { Contact, getContacts } from "../../contact/domain/models/ContactModel";
-import { useSnapshot } from "../../hooks/global-hooks";
+import { db } from "@/infra/services/firebase";
+import { useSnapshot } from "../../hooks/firestore-hooks";
 import DefaultMenu from "../../components/DefaultMenu";
 import {
   addMessage,
@@ -36,12 +34,13 @@ import {
   deleteMessage,
 } from "../message.model";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import DialogEditingMessage from "../components/DialogEditingMessage";
+import { DialogEditingMessage } from "../components/dialog-editing-message";
 import ListItemEditDelete from "../../components/ListItemEditDelete";
-import { toDate } from "../../../infra/utils/to-date";
-import { formatDateTimeLocal } from "../../../infra/utils/format-date-time-local";
+import { toDate } from "@/infra/utils/to-date";
+import { formatDateTimeLocal } from "@/infra/utils/format-date-time-local";
+import { Contact, getContacts } from "@/app/contact/contact.model";
 
-const MessagePage: React.FC = () => {
+export function MessagePage() {
   const { user } = useAuth();
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const [content, setContent] = useState("");
@@ -245,30 +244,30 @@ const MessagePage: React.FC = () => {
           <Box sx={{ overflowY: "auto" }}>
             <List>
               {messages.map((msg) => (
-                <ListItem key={msg.id} divider>
-                  <ListItemEditDelete
-                    primary={msg.content}
-                    secondary={
-                      `Status: ${msg.status} | Para: ${contacts
-                        .filter((c) => msg.contactIds.includes(c.id))
-                        .map((c) => c.name)
-                        .join(", ")} | ` +
-                      (msg.status === "agendada"
-                        ? `\nAgendada para: ${formatDateTimeLocal(
-                            msg.scheduledAt
-                          )}`
-                        : `\nEnviada em: ${formatDateTimeLocal(msg.sentAt)}`)
-                    }
-                    {...(msg.status === "agendada"
-                      ? {
-                          onEdit: () => handleStartEdit(msg),
-                          editLabel: "Editar",
-                        }
-                      : {})}
-                    onDelete={() => setConfirmDeleteId(msg.id)}
-                    deleteLabel="Remover"
-                  />
-                </ListItem>
+                <ListItemEditDelete
+                  key={msg.id}
+                  primary={msg.content}
+                  secondary={
+                    `Status: ${msg.status} | Para: ${contacts
+                      .filter((c) => msg.contactIds.includes(c.id))
+                      .map((c) => c.name)
+                      .join(", ")} | ` +
+                    (msg.status === "agendada"
+                      ? `\nAgendada para: ${formatDateTimeLocal(
+                          msg.scheduledAt
+                        )}`
+                      : `\nEnviada em: ${formatDateTimeLocal(msg.sentAt)}`)
+                  }
+                  {...(msg.status === "agendada"
+                    ? {
+                        onEdit: () => handleStartEdit(msg),
+                        editLabel: "Editar",
+                      }
+                    : {})}
+                  onDelete={() => setConfirmDeleteId(msg.id)}
+                  deleteLabel="Remover"
+                  divider={true}
+                />
               ))}
               {messages.length === 0 && (
                 <Typography variant="body2" color="text.secondary">
@@ -308,6 +307,4 @@ const MessagePage: React.FC = () => {
       </DefaultMenu>
     </>
   );
-};
-
-export default MessagePage;
+}

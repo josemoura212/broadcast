@@ -8,6 +8,7 @@ interface ListItemEditDeleteProps {
   onDelete: () => void;
   editLabel?: string;
   deleteLabel?: string;
+  divider?: boolean;
 }
 
 const ListItemEditDelete: React.FC<ListItemEditDeleteProps> = ({
@@ -17,8 +18,9 @@ const ListItemEditDelete: React.FC<ListItemEditDeleteProps> = ({
   onDelete,
   editLabel = "Editar",
   deleteLabel = "Remover",
+  divider = false,
 }) => (
-  <ListItem>
+  <ListItem divider={divider}>
     <ListItemText primary={primary} secondary={secondary} />
     {onEdit && (
       <Button

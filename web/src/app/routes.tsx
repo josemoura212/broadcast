@@ -2,9 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import { PrivateRoute } from "./routes/private-route";
 import { Register } from "./pages/register";
 import { Home } from "./pages/home";
-import ConnectionPage from "./connection/page/ConnectionPage";
-import ContactPage from "./contact/page/ContactPage";
-import MessagePage from "./message/page/MessagePage";
+import { ConnectionPage } from "./connection/page/connection-page";
+import { ContactPage } from "./contact/page/contact-page";
+import { MessagePage } from "./message/page/message-page";
 import { Login } from "./pages/login";
 
 export function AppRoutes() {

@@ -7,7 +7,7 @@ import {
   List,
   ListItem,
 } from "@mui/material";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/auth-context";
 import {
   collection,
   CollectionReference,
@@ -19,15 +19,15 @@ import {
   addContact,
   deleteContact,
   updateContact,
-} from "../domain/models/ContactModel";
-import { useSnapshot } from "../../hooks/global-hooks";
+} from "../contact.model";
+import { useSnapshot } from "../../hooks/firestore-hooks";
 import { db } from "../../../infra/services/firebase";
 import DefaultMenu from "../../components/DefaultMenu";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import InlineEditFields from "../../components/InlineEditFields";
 import ListItemEditDelete from "../../components/ListItemEditDelete";
 
-const ContactPage: React.FC = () => {
+export function ContactPage() {
   const { user } = useAuth();
   const [newContact, setNewContact] = useState({ name: "", phone: "" });
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -136,9 +136,9 @@ const ContactPage: React.FC = () => {
         ) : (
           <Box sx={{ maxHeight: "60vh", overflowY: "auto" }}>
             <List>
-              {contacts.map((contact) => (
-                <ListItem key={contact.id} divider>
-                  {editingId === contact.id ? (
+              {contacts.map((contact) =>
+                editingId === contact.id ? (
+                  <ListItem key={contact.id} divider>
                     <InlineEditFields
                       fields={[
                         {
@@ -158,18 +158,20 @@ const ContactPage: React.FC = () => {
                       onSave={handleSaveEdit}
                       onCancel={handleCancelEdit}
                     />
-                  ) : (
-                    <ListItemEditDelete
-                      primary={contact.name}
-                      secondary={contact.phone}
-                      onEdit={() =>
-                        handleStartEdit(contact.id, contact.name, contact.phone)
-                      }
-                      onDelete={() => setConfirmDeleteId(contact.id)}
-                    />
-                  )}
-                </ListItem>
-              ))}
+                  </ListItem>
+                ) : (
+                  <ListItemEditDelete
+                    key={contact.id}
+                    primary={contact.name}
+                    secondary={contact.phone}
+                    onEdit={() =>
+                      handleStartEdit(contact.id, contact.name, contact.phone)
+                    }
+                    onDelete={() => setConfirmDeleteId(contact.id)}
+                    divider={true}
+                  />
+                )
+              )}
               {contacts.length === 0 && (
                 <Typography variant="body2" color="text.secondary">
                   Nenhum contato cadastrado.
@@ -190,6 +192,4 @@ const ContactPage: React.FC = () => {
       />
     </>
   );
-};
-
-export default ContactPage;
+}

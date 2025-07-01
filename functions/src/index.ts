@@ -1,13 +1,10 @@
 import * as functions from "firebase-functions/v1";
-import * as admin from "firebase-admin";
-
-admin.initializeApp();
+import { db, timestamp } from "./firebase-config";
 
 export const processScheduledMessages = functions.pubsub
   .schedule("every 1 minutes")
   .onRun(async (context) => {
-    const db = admin.firestore();
-    const now = admin.firestore.Timestamp.now();
+    const now = timestamp.now();
 
     const scheduledMessagesSnap = await db
       .collectionGroup("messages")

@@ -22,7 +22,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "build",
+    "public": "web/build",
     "ignore": [
       "firebase.json",
       "**/.*",

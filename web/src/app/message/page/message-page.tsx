@@ -33,7 +33,7 @@ import {
   updateMessage,
   deleteMessage,
 } from "../message.model";
-import ConfirmDialog from "../../components/ConfirmDialog";
+import { ConfirmDialog } from "../../components/confirm-dialog";
 import { DialogEditingMessage } from "../components/dialog-editing-message";
 import ListItemEditDelete from "../../components/ListItemEditDelete";
 import { toDate } from "@/infra/utils/to-date";

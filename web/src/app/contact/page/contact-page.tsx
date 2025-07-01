@@ -23,7 +23,7 @@ import {
 import { useSnapshot } from "../../hooks/firestore-hooks";
 import { db } from "../../../infra/services/firebase";
 import { DefaultMenu } from "../../components/default-menu";
-import ConfirmDialog from "../../components/ConfirmDialog";
+import { ConfirmDialog } from "../../components/confirm-dialog";
 import InlineEditFields from "../../components/InlineEditFields";
 import ListItemEditDelete from "../../components/ListItemEditDelete";
 

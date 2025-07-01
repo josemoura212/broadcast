@@ -23,7 +23,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../infra/services/firebase";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import DefaultMenu from "../../components/DefaultMenu";
+import { DefaultMenu } from "../../components/default-menu";
 import InlineEditFields from "../../components/InlineEditFields";
 import ListItemEditDelete from "../../components/ListItemEditDelete";
 

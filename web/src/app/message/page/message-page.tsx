@@ -26,7 +26,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/infra/services/firebase";
 import { useSnapshot } from "../../hooks/firestore-hooks";
-import DefaultMenu from "../../components/DefaultMenu";
+import { DefaultMenu } from "../../components/default-menu";
 import {
   addMessage,
   Message,

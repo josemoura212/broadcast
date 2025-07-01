@@ -1,26 +1,30 @@
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
-import { ThemeProvider, CssBaseline } from "@mui/material";
 import { AppRoutes } from "./routes";
 import darkTheme from "./theme";
 import { AuthProvider } from "./context/AuthContext";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { ptBR } from "date-fns/locale";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
 
-const App: React.FC = () => {
+export function App() {
   React.useEffect(() => {
     document.documentElement.lang = "pt-br";
     document.title = "Broadcast";
   }, []);
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <AuthProvider>
-        <Router>
-          <AppRoutes />
-        </Router>
-      </AuthProvider>
-    </ThemeProvider>
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <AuthProvider>
+          <Router>
+            <AppRoutes />
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
+    </LocalizationProvider>
   );
-};
-
-export default App;
+}

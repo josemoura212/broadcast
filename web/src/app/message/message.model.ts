@@ -8,7 +8,7 @@ import {
   deleteDoc,
   getDoc,
 } from "firebase/firestore";
-import { db } from "../../../../infra/services/firebase";
+import { db } from "../../infra/services/firebase";
 
 export interface Message {
   id: string;

@@ -1,13 +1,11 @@
 import { Routes, Route } from "react-router-dom";
-import { lazy } from "react";
-import { PrivateRoute } from "./routes/PrivateRoute";
-
-const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
-const Home = lazy(() => import("./pages/Home"));
-const ConnectionPage = lazy(() => import("./connection/page/ConnectionPage"));
-const ContactPage = lazy(() => import("./contact/page/ContactPage"));
-const MessagePage = lazy(() => import("./message/page/MessagePage"));
+import { PrivateRoute } from "./routes/private-route";
+import { Register } from "./pages/register";
+import { Home } from "./pages/home";
+import ConnectionPage from "./connection/page/ConnectionPage";
+import ContactPage from "./contact/page/ContactPage";
+import MessagePage from "./message/page/MessagePage";
+import { Login } from "./pages/login";
 
 export function AppRoutes() {
   return (

@@ -1,9 +1,8 @@
-import React from "react";
 import { Box, Button, Paper, Typography, Stack } from "@mui/material";
 import AppBarComponent from "../components/AppBarComponent";
 import { useNavigate } from "react-router-dom";
 
-const Home: React.FC = () => {
+export function Home() {
   const navigate = useNavigate();
 
   return (
@@ -44,6 +43,4 @@ const Home: React.FC = () => {
       </Box>
     </>
   );
-};
-
-export default Home;
+}

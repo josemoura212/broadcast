@@ -34,7 +34,7 @@ import {
   Message,
   updateMessage,
   deleteMessage,
-} from "../domain/models/MessageModel";
+} from "../message.model";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import DialogEditingMessage from "../components/DialogEditingMessage";
 import ListItemEditDelete from "../../components/ListItemEditDelete";

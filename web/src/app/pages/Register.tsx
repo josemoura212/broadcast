@@ -5,7 +5,7 @@ import { auth } from "../../infra/services/firebase";
 import { useNavigate } from "react-router-dom";
 import FormsBase from "../components/FormsBase";
 
-const Register: React.FC = () => {
+export function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -86,6 +86,4 @@ const Register: React.FC = () => {
       </Button>
     </FormsBase>
   );
-};
-
-export default Register;
+}

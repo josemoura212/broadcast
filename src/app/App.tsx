@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes";
 import darkTheme from "./theme";
@@ -10,11 +9,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 
 export function App() {
-  React.useEffect(() => {
-    document.documentElement.lang = "pt-br";
-    document.title = "Broadcast";
-  }, []);
-
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
       <ThemeProvider theme={darkTheme}>

@@ -52,6 +52,7 @@ export function useContactPage() {
     name: "",
     phone: "",
   });
+
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const ref = useMemo(
@@ -63,9 +64,10 @@ export function useContactPage() {
       ),
     [user?.uid]
   );
+
   const { state: contacts, loading } = useSnapshot<Contact>(ref);
 
-  const handleAddContact = async (e: React.FormEvent) => {
+  async function handleAddContact(e: React.FormEvent) {
     e.preventDefault();
     if (!user || !newContact.name.trim() || !newContact.phone.trim()) {
       return;
@@ -76,14 +78,14 @@ export function useContactPage() {
       phone: newContact.phone.trim(),
     });
     setNewContact({ name: "", phone: "" });
-  };
+  }
 
-  const handleStartEdit = (id: string, name: string, phone: string) => {
+  async function handleStartEdit(id: string, name: string, phone: string) {
     setEditingId(id);
     setEditingContact({ name, phone });
-  };
+  }
 
-  const handleSaveEdit = async () => {
+  async function handleSaveEdit() {
     if (
       !user ||
       !editingId ||
@@ -97,18 +99,18 @@ export function useContactPage() {
     });
     setEditingId(null);
     setEditingContact({ name: "", phone: "" });
-  };
+  }
 
-  const handleCancelEdit = () => {
+  function handleCancelEdit() {
     setEditingId(null);
     setEditingContact({ name: "", phone: "" });
-  };
+  }
 
-  const handleRemoveContact = async (contactId: string) => {
+  async function handleRemoveContact(contactId: string) {
     if (!user) return;
     await deleteContact(contactId);
     setConfirmDeleteId(null);
-  };
+  }
 
   const controller: ContactController = {
     newContact,

@@ -162,11 +162,6 @@ export function MessagePage() {
           confirmText="Remover"
           confirmColor="error"
         />
-        {controller.editError && (
-          <Typography color="error" variant="body2" mt={1}>
-            {controller.editError}
-          </Typography>
-        )}
         <DialogEditingMessage
           open={!!controller.editingId}
           value={controller.editingMessage}

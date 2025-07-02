@@ -52,37 +52,37 @@ export function useConnectionPage() {
   );
   const { state: connections, loading } = useSnapshot<Connection>(ref);
 
-  const handleAddConnection = async (e: React.FormEvent) => {
+  async function handleAddConnection(e: React.FormEvent) {
     e.preventDefault();
     if (!user || !newConnection.trim()) {
       return;
     }
     await addConnection(user.uid, newConnection.trim());
     setNewConnection("");
-  };
+  }
 
-  const handleRemoveConnection = async (connectionId: string) => {
+  async function handleRemoveConnection(connectionId: string) {
     if (!user) return;
     await deleteConnection(connectionId);
     setConfirmDeleteId(null);
-  };
+  }
 
-  const handleStartEdit = (id: string, name: string) => {
+  function handleStartEdit(id: string, name: string) {
     setEditingId(id);
     setEditingName(name);
-  };
+  }
 
-  const handleSaveEdit = async () => {
+  async function handleSaveEdit() {
     if (!user || !editingId || !editingName.trim()) return;
     await updateConnection(editingId, editingName.trim());
     setEditingId(null);
     setEditingName("");
-  };
+  }
 
-  const handleCancelEdit = () => {
+  function handleCancelEdit() {
     setEditingId(null);
     setEditingName("");
-  };
+  }
 
   const controller: ConnectionController = {
     newConnection,

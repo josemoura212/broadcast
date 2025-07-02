@@ -1,19 +1,3 @@
-import React, { useMemo, useState } from "react";
-import { useAuth } from "../../context/auth-context";
-import {
-  addConnection,
-  Connection,
-  deleteConnection,
-  updateConnection,
-} from "../connection.model";
-import { useSnapshot } from "../../hooks/firestore-hooks";
-import {
-  collection,
-  CollectionReference,
-  orderBy,
-  query,
-} from "firebase/firestore";
-import { db } from "../../../infra/services/firebase";
 import { ConfirmDialog } from "../../components/confirm-dialog";
 import { DefaultMenu } from "../../components/default-menu";
 import { InlineEditFields } from "../../components/inline-edit-fields";
@@ -24,58 +8,10 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import { useConnectionPage } from "./use-connection-page";
 
 export function ConnectionPage() {
-  const { user } = useAuth();
-  const [newConnection, setNewConnection] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState("");
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-
-  const ref = useMemo(
-    () =>
-      query(
-        collection(
-          db,
-          `clients/${user?.uid}/connections`
-        ) as CollectionReference<Connection>,
-        orderBy("name")
-      ),
-    [user?.uid]
-  );
-  const { state: connections, loading } = useSnapshot<Connection>(ref);
-
-  const handleAddConnection = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user || !newConnection.trim()) {
-      return;
-    }
-    await addConnection(user.uid, newConnection.trim());
-    setNewConnection("");
-  };
-
-  const handleRemoveConnection = async (connectionId: string) => {
-    if (!user) return;
-    await deleteConnection(user.uid, connectionId);
-    setConfirmDeleteId(null);
-  };
-
-  const handleStartEdit = (id: string, name: string) => {
-    setEditingId(id);
-    setEditingName(name);
-  };
-
-  const handleSaveEdit = async () => {
-    if (!user || !editingId || !editingName.trim()) return;
-    await updateConnection(user.uid, editingId, editingName.trim());
-    setEditingId(null);
-    setEditingName("");
-  };
-
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setEditingName("");
-  };
+  const { controller } = useConnectionPage();
 
   return (
     <>
@@ -84,54 +20,56 @@ export function ConnectionPage() {
           Minhas Conexões
         </Typography>
         <form
-          onSubmit={handleAddConnection}
-          style={{
-            display: "flex",
-            gap: 8,
-            marginBottom: 16,
-            alignItems: "flex-start",
-          }}
+          onSubmit={controller.handleAddConnection}
+          className="flex gap-3 mb-3 items-start"
         >
           <TextField
             label="Nome da conexão"
-            value={newConnection}
-            onChange={(e) => setNewConnection(e.target.value)}
+            value={controller.newConnection}
+            onChange={(e) => controller.setNewConnection(e.target.value)}
             size="small"
             fullWidth
             required
+            autoFocus
           />
           <Button type="submit" variant="contained" color="primary">
             Adicionar
           </Button>
         </form>
-        {loading ? (
+        {controller.loading ? (
           <Typography>Carregando...</Typography>
         ) : (
           <Box sx={{ maxHeight: "60vh", overflowY: "auto" }}>
             <List>
-              {connections.map((conn) =>
-                editingId === conn.id ? (
+              {controller.connections.map((conn) =>
+                controller.editingId === conn.id ? (
                   <ListItem key={conn.id} divider>
                     <InlineEditFields
                       fields={[
-                        { label: "Nome", name: "name", value: editingName },
+                        {
+                          label: "Nome",
+                          name: "name",
+                          value: controller.editingName,
+                        },
                       ]}
-                      onChange={(value) => setEditingName(value)}
-                      onSave={handleSaveEdit}
-                      onCancel={handleCancelEdit}
+                      onChange={(_, value) => controller.setEditingName(value)}
+                      onSave={controller.handleSaveEdit}
+                      onCancel={controller.handleCancelEdit}
                     />
                   </ListItem>
                 ) : (
                   <ActionListItem
                     key={conn.id}
                     primary={conn.name}
-                    onEdit={() => handleStartEdit(conn.id, conn.name)}
-                    onDelete={() => setConfirmDeleteId(conn.id)}
+                    onEdit={() =>
+                      controller.handleStartEdit(conn.id, conn.name)
+                    }
+                    onDelete={() => controller.setConfirmDeleteId(conn.id)}
                     divider={true}
                   />
                 )
               )}
-              {connections.length === 0 && (
+              {controller.connections.length === 0 && (
                 <Typography variant="body2" color="text.secondary">
                   Nenhuma conexão cadastrada.
                 </Typography>
@@ -141,11 +79,13 @@ export function ConnectionPage() {
         )}
       </DefaultMenu>
       <ConfirmDialog
-        open={!!confirmDeleteId}
+        open={!!controller.confirmDeleteId}
         title="Confirmar remoção"
         message="Tem certeza que deseja remover esta conexão? Essa ação não pode ser desfeita."
-        onClose={() => setConfirmDeleteId(null)}
-        onConfirm={() => handleRemoveConnection(confirmDeleteId!)}
+        onClose={() => controller.setConfirmDeleteId(null)}
+        onConfirm={() =>
+          controller.handleRemoveConnection(controller.confirmDeleteId!)
+        }
         confirmText="Remover"
         confirmColor="error"
       />

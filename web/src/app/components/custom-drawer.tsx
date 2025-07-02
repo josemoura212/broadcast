@@ -5,12 +5,16 @@ import {
   Lan as LanIcon,
   Contacts as ContactsIcon,
   Menu as MenuIcon,
+  Logout,
 } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import { DrawerItem } from "./drawer-item";
+import { signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { auth } from "@/infra/services/firebase";
 
 const DRAWER_KEY = "drawerPinned";
 
@@ -19,6 +23,7 @@ export function CustomDrawer() {
   const [isPinned, setIsPinned] = useState(
     JSON.parse(localStorage.getItem(DRAWER_KEY) ?? "false")
   );
+  const navigate = useNavigate();
 
   const drawerWidth = 240;
   const collapsedWidth = 64;
@@ -35,6 +40,11 @@ export function CustomDrawer() {
   ];
 
   const currentWidth = isExpanded || isPinned ? drawerWidth : collapsedWidth;
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/login");
+  };
 
   return (
     <Box
@@ -54,7 +64,7 @@ export function CustomDrawer() {
         </Tooltip>
       </Box>
       <Divider />
-      <Box sx={{ p: 1 }}>
+      <Box className="p-2 flex flex-col h-full">
         {menuItems.map((item, index) => (
           <DrawerItem
             key={index}
@@ -65,6 +75,15 @@ export function CustomDrawer() {
             isPinned={isPinned}
           />
         ))}
+        <Box className="flex-1" />
+        <DrawerItem
+          icon={<Logout />}
+          label="Sair"
+          path="/login"
+          isExpanded={isExpanded}
+          isPinned={isPinned}
+          onClick={handleLogout}
+        />
       </Box>
     </Box>
   );

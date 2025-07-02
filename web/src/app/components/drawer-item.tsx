@@ -7,10 +7,12 @@ interface DrawerItemProps {
   path: string;
   isExpanded: boolean;
   isPinned: boolean;
+  onClick?: () => void;
 }
 
 export function DrawerItem(props: DrawerItemProps) {
-  const { icon, label, path, isExpanded, isPinned }: DrawerItemProps = props;
+  const { icon, label, path, isExpanded, isPinned, onClick }: DrawerItemProps =
+    props;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,7 +24,7 @@ export function DrawerItem(props: DrawerItemProps) {
 
   return (
     <Box
-      onClick={handleClick}
+      onClick={onClick || handleClick}
       sx={{
         display: "flex",
         alignItems: "center",

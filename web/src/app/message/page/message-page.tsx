@@ -19,7 +19,7 @@ import {
 } from "../message.model";
 import { ConfirmDialog } from "../../components/confirm-dialog";
 import { DialogEditingMessage } from "../components/dialog-editing-message";
-import ListItemEditDelete from "../../components/ListItemEditDelete";
+import { ActionListItem } from "../../components/action-list-item";
 import { toDate } from "@/infra/utils/to-date";
 import { formatDateTimeLocal } from "@/infra/utils/format-date-time-local";
 import { Contact, getContacts } from "@/app/contact/contact.model";
@@ -241,7 +241,7 @@ export function MessagePage() {
           <Box sx={{ overflowY: "auto" }}>
             <List>
               {messages.map((msg) => (
-                <ListItemEditDelete
+                <ActionListItem
                   key={msg.id}
                   primary={msg.content}
                   secondary={

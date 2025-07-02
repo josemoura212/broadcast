@@ -17,8 +17,8 @@ import { useSnapshot } from "../../hooks/firestore-hooks";
 import { db } from "../../../infra/services/firebase";
 import { DefaultMenu } from "../../components/default-menu";
 import { ConfirmDialog } from "../../components/confirm-dialog";
-import InlineEditFields from "../../components/InlineEditFields";
-import ListItemEditDelete from "../../components/ListItemEditDelete";
+import { InlineEditFields } from "../../components/inline-edit-fields";
+import { ActionListItem } from "../../components/action-list-item";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -159,7 +159,7 @@ export function ContactPage() {
                     />
                   </ListItem>
                 ) : (
-                  <ListItemEditDelete
+                  <ActionListItem
                     key={contact.id}
                     primary={contact.name}
                     secondary={contact.phone}

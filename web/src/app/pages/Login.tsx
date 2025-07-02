@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TextField, Button, Typography } from "@mui/material";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import FormsBase from "../components/FormsBase";
+import { FormsBox } from "../components/froms-box";
 import { auth } from "../../infra/services/firebase";
 
 export function Login() {
@@ -23,7 +23,7 @@ export function Login() {
   };
 
   return (
-    <FormsBase title="Login">
+    <FormsBox title="Login">
       <form onSubmit={handleLogin}>
         <TextField
           label="E-mail"
@@ -66,6 +66,6 @@ export function Login() {
       >
         Criar conta
       </Button>
-    </FormsBase>
+    </FormsBox>
   );
 }

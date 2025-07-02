@@ -3,7 +3,7 @@ import { TextField, Button, Typography } from "@mui/material";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../infra/services/firebase";
 import { useNavigate } from "react-router-dom";
-import FormsBase from "../components/FormsBase";
+import { FormsBox } from "../components/froms-box";
 
 export function Register() {
   const [email, setEmail] = useState("");
@@ -32,7 +32,7 @@ export function Register() {
   };
 
   return (
-    <FormsBase title="Criar Conta">
+    <FormsBox title="Criar Conta">
       <form onSubmit={handleRegister}>
         <TextField
           label="E-mail"
@@ -84,6 +84,6 @@ export function Register() {
       >
         Já tenho conta
       </Button>
-    </FormsBase>
+    </FormsBox>
   );
 }

@@ -16,9 +16,13 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "@/infra/services/firebase";
 
+interface CustomDrawerProps {
+  onPinnedChange?: (isPinned: boolean) => void;
+}
+
 const DRAWER_KEY = "drawerPinned";
 
-export function CustomDrawer() {
+export function CustomDrawer({ onPinnedChange }: CustomDrawerProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPinned, setIsPinned] = useState(
     JSON.parse(localStorage.getItem(DRAWER_KEY) ?? "false")
@@ -30,6 +34,7 @@ export function CustomDrawer() {
 
   useEffect(() => {
     localStorage.setItem(DRAWER_KEY, JSON.stringify(isPinned));
+    onPinnedChange?.(isPinned);
   }, [isPinned]);
 
   const menuItems = [

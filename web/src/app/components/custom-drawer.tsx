@@ -53,7 +53,8 @@ export function CustomDrawer({ onPinnedChange }: CustomDrawerProps) {
 
   return (
     <Box
-      className={`flex flex-col w-${currentWidth} h-full fixed overflow-x-hidden  shadow-md shadow-gray-700`}
+      className={`flex flex-col w-${currentWidth} h-full fixed overflow-x-hidden shadow-md shadow-gray-700`}
+      sx={{ zIndex: 1300, bgcolor: "background.paper" }}
       onMouseEnter={() => !isPinned && setIsExpanded(true)}
       onMouseLeave={() => !isPinned && setIsExpanded(false)}
     >

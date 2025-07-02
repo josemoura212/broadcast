@@ -1,20 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  Checkbox,
-  ListItemText,
-  OutlinedInput,
-  List,
-  Stack,
-} from "@mui/material";
-
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { useAuth } from "../../context/auth-context";
 import {
@@ -39,6 +23,19 @@ import ListItemEditDelete from "../../components/ListItemEditDelete";
 import { toDate } from "@/infra/utils/to-date";
 import { formatDateTimeLocal } from "@/infra/utils/format-date-time-local";
 import { Contact, getContacts } from "@/app/contact/contact.model";
+import Typography from "@mui/material/Typography";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import MenuItem from "@mui/material/MenuItem";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemText from "@mui/material/ListItemText";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import List from "@mui/material/List";
 
 export function MessagePage() {
   const { user } = useAuth();

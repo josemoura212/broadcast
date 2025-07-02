@@ -1,20 +1,19 @@
 import { Contact } from "@/app/contact/contact.model";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Checkbox,
-  ListItemText,
-  OutlinedInput,
-  Stack,
-} from "@mui/material";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Select from "@mui/material/Select";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+
 import { DateTimePicker } from "@mui/x-date-pickers";
 
 interface DialogEditingMessageProps {

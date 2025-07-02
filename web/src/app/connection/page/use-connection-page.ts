@@ -16,7 +16,7 @@ import {
 import { db } from "@/infra/services/firebase";
 import { useSnapshot } from "@/app/hooks/firestore-hooks";
 
-export type ConnectionController = {
+export interface ConnectionController {
   newConnection: string;
   setNewConnection: React.Dispatch<React.SetStateAction<string>>;
   editingId: string | null;
@@ -32,7 +32,7 @@ export type ConnectionController = {
   handleStartEdit: (id: string, name: string) => void;
   handleSaveEdit: () => Promise<void>;
   handleCancelEdit: () => void;
-};
+}
 
 export function useConnectionPage() {
   const { user } = useAuth();

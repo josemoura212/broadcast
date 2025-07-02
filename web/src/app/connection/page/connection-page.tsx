@@ -1,12 +1,4 @@
 import React, { useMemo, useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  List,
-  ListItem,
-} from "@mui/material";
 import { useAuth } from "../../context/auth-context";
 import {
   addConnection,
@@ -26,6 +18,12 @@ import { ConfirmDialog } from "../../components/confirm-dialog";
 import { DefaultMenu } from "../../components/default-menu";
 import InlineEditFields from "../../components/InlineEditFields";
 import ListItemEditDelete from "../../components/ListItemEditDelete";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
 
 export function ConnectionPage() {
   const { user } = useAuth();

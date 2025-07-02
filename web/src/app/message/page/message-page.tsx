@@ -1,28 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { useAuth } from "../../context/auth-context";
-import {
-  collection,
-  CollectionReference,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "@/infra/services/firebase";
-import { useSnapshot } from "../../hooks/firestore-hooks";
 import { DefaultMenu } from "../../components/default-menu";
-import {
-  addMessage,
-  Message,
-  updateMessage,
-  deleteMessage,
-} from "../message.model";
 import { ConfirmDialog } from "../../components/confirm-dialog";
 import { DialogEditingMessage } from "../components/dialog-editing-message";
 import { ActionListItem } from "../../components/action-list-item";
-import { toDate } from "@/infra/utils/to-date";
 import { formatDateTimeLocal } from "@/infra/utils/format-date-time-local";
-import { Contact, getContacts } from "@/app/contact/contact.model";
 import Typography from "@mui/material/Typography";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -36,120 +17,10 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
+import { useMessagePage } from "./use-message-page";
 
 export function MessagePage() {
-  const { user } = useAuth();
-  const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
-  const [content, setContent] = useState("");
-  const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
-  const [filter, setFilter] = useState<"enviada" | "agendada" | "all">("all");
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingMessage, setEditingMessage] = useState<{
-    content: string;
-    scheduledAt: Date | null;
-    contactIds: string[];
-  }>({
-    content: "",
-    scheduledAt: null,
-    contactIds: [],
-  });
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const [editError, setEditError] = useState<string>("");
-
-  useEffect(() => {
-    if (user?.uid) {
-      getContacts(user.uid).then(setContacts);
-    }
-  }, [user?.uid]);
-
-  const refMessages = useMemo(() => {
-    const messagesRef = collection(
-      db,
-      `clients/${user?.uid}/messages`
-    ) as CollectionReference<Message>;
-
-    if (filter !== "all") {
-      return query(
-        messagesRef,
-        where("status", "==", filter),
-        orderBy("createdAt", "desc")
-      );
-    }
-
-    return query(messagesRef, orderBy("createdAt", "desc"));
-  }, [user?.uid, filter]);
-
-  const { state: messages, loading } = useSnapshot<Message>(refMessages);
-
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user || !content.trim() || selectedContacts.length === 0) return;
-
-    await addMessage({
-      userId: user.uid,
-      content: content.trim(),
-      contactIds: selectedContacts,
-      scheduledAt: scheduledAt ?? undefined,
-    });
-    setContent("");
-    setSelectedContacts([]);
-    setScheduledAt(null);
-  };
-
-  const handleStartEdit = (msg: Message) => {
-    setEditingId(msg.id);
-    setEditingMessage({
-      content: msg.content,
-      scheduledAt: toDate(msg.scheduledAt) ?? null,
-      contactIds: msg.contactIds ?? [],
-    });
-    setEditError("");
-  };
-
-  const handleEditChange = (
-    fields: Partial<{
-      content: string;
-      scheduledAt: Date | null;
-      contactIds: string[];
-    }>
-  ) => {
-    setEditingMessage((prev) => ({ ...prev, ...fields }));
-  };
-
-  const handleSaveEdit = async () => {
-    if (
-      !user ||
-      !editingId ||
-      !editingMessage.content.trim() ||
-      editingMessage.contactIds.length === 0
-    )
-      return;
-    try {
-      await updateMessage(user.uid, editingId, {
-        content: editingMessage.content.trim(),
-        scheduledAt: editingMessage.scheduledAt ?? undefined,
-        contactIds: editingMessage.contactIds,
-      });
-      setEditingId(null);
-      setEditingMessage({ content: "", scheduledAt: null, contactIds: [] });
-      setEditError("");
-    } catch (e: any) {
-      setEditError(e.message || "Erro ao editar mensagem");
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setEditingMessage({ content: "", scheduledAt: null, contactIds: [] });
-    setEditError("");
-  };
-
-  const handleRemoveMessage = async (id: string) => {
-    if (!user) return;
-    await deleteMessage(user.uid, id);
-    setConfirmDeleteId(null);
-  };
+  const controller = useMessagePage();
 
   return (
     <>
@@ -158,7 +29,7 @@ export function MessagePage() {
           Enviar Mensagem
         </Typography>
         <form
-          onSubmit={handleSend}
+          onSubmit={controller.handleSend}
           style={{
             display: "flex",
             flexDirection: "column",
@@ -171,20 +42,24 @@ export function MessagePage() {
             <Select
               multiple
               required
-              value={selectedContacts}
-              onChange={(e) => setSelectedContacts(e.target.value as string[])}
+              value={controller.selectedContacts}
+              onChange={(e) =>
+                controller.setSelectedContacts(e.target.value as string[])
+              }
               input={<OutlinedInput label="Contatos" />}
               renderValue={(selected) =>
-                contacts
+                controller.contacts
                   .filter((c) => selected.includes(c.id))
                   .map((c) => c.name)
                   .join(", ")
               }
             >
-              {contacts.map((contact) => (
+              {controller.contacts.map((contact) => (
                 <MenuItem key={contact.id} value={contact.id}>
                   <Checkbox
-                    checked={selectedContacts.indexOf(contact.id) > -1}
+                    checked={
+                      controller.selectedContacts.indexOf(contact.id) > -1
+                    }
                   />
                   <ListItemText primary={contact.name} />
                 </MenuItem>
@@ -193,8 +68,8 @@ export function MessagePage() {
           </FormControl>
           <TextField
             label="Mensagem"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={controller.content}
+            onChange={(e) => controller.setContent(e.target.value)}
             fullWidth
             multiline
             minRows={2}
@@ -203,31 +78,33 @@ export function MessagePage() {
 
           <DateTimePicker
             label="Agendar para (opcional)"
-            value={scheduledAt}
-            onChange={(newValue) => setScheduledAt(newValue)}
+            value={controller.scheduledAt}
+            onChange={(newValue) => controller.setScheduledAt(newValue)}
             slotProps={{ textField: { fullWidth: true } }}
             minDateTime={new Date()}
           />
           <Button type="submit" variant="contained" color="primary">
-            {scheduledAt ? "Agendar Mensagem" : "Enviar Mensagem"}
+            {controller.scheduledAt ? "Agendar Mensagem" : "Enviar Mensagem"}
           </Button>
         </form>
         <Stack direction="row" spacing={2} mb={2}>
           <Button
-            variant={filter === "all" ? "contained" : "outlined"}
-            onClick={() => setFilter("all")}
+            variant={controller.filter === "all" ? "contained" : "outlined"}
+            onClick={() => controller.setFilter("all")}
           >
             Todas
           </Button>
           <Button
-            variant={filter === "enviada" ? "contained" : "outlined"}
-            onClick={() => setFilter("enviada")}
+            variant={controller.filter === "enviada" ? "contained" : "outlined"}
+            onClick={() => controller.setFilter("enviada")}
           >
             Enviadas
           </Button>
           <Button
-            variant={filter === "agendada" ? "contained" : "outlined"}
-            onClick={() => setFilter("agendada")}
+            variant={
+              controller.filter === "agendada" ? "contained" : "outlined"
+            }
+            onClick={() => controller.setFilter("agendada")}
           >
             Agendadas
           </Button>
@@ -235,17 +112,17 @@ export function MessagePage() {
         <Typography variant="h6" mb={1}>
           Mensagens
         </Typography>
-        {loading ? (
+        {controller.loading ? (
           <Typography>Carregando...</Typography>
         ) : (
           <Box sx={{ overflowY: "auto" }}>
             <List>
-              {messages.map((msg) => (
+              {controller.messages.map((msg) => (
                 <ActionListItem
                   key={msg.id}
                   primary={msg.content}
                   secondary={
-                    `Status: ${msg.status} | Para: ${contacts
+                    `Status: ${msg.status} | Para: ${controller.contacts
                       .filter((c) => msg.contactIds.includes(c.id))
                       .map((c) => c.name)
                       .join(", ")} | ` +
@@ -257,16 +134,16 @@ export function MessagePage() {
                   }
                   {...(msg.status === "agendada"
                     ? {
-                        onEdit: () => handleStartEdit(msg),
+                        onEdit: () => controller.handleStartEdit(msg),
                         editLabel: "Editar",
                       }
                     : {})}
-                  onDelete={() => setConfirmDeleteId(msg.id)}
+                  onDelete={() => controller.setConfirmDeleteId(msg.id)}
                   deleteLabel="Remover"
                   divider={true}
                 />
               ))}
-              {messages.length === 0 && (
+              {controller.messages.length === 0 && (
                 <Typography variant="body2" color="text.secondary">
                   Nenhuma mensagem encontrada.
                 </Typography>
@@ -275,30 +152,33 @@ export function MessagePage() {
           </Box>
         )}
         <ConfirmDialog
-          open={!!confirmDeleteId}
+          open={!!controller.confirmDeleteId}
           title="Confirmar remoção"
           message="Tem certeza que deseja remover esta mensagem? Essa ação não pode ser desfeita."
-          onClose={() => setConfirmDeleteId(null)}
-          onConfirm={() => handleRemoveMessage(confirmDeleteId!)}
+          onClose={() => controller.setConfirmDeleteId(null)}
+          onConfirm={() =>
+            controller.handleRemoveMessage(controller.confirmDeleteId!)
+          }
           confirmText="Remover"
           confirmColor="error"
         />
-        {editError && (
+        {controller.editError && (
           <Typography color="error" variant="body2" mt={1}>
-            {editError}
+            {controller.editError}
           </Typography>
         )}
         <DialogEditingMessage
-          open={!!editingId}
-          value={editingMessage}
-          contacts={contacts}
-          onChange={handleEditChange}
-          onClose={handleCancelEdit}
-          onSave={handleSaveEdit}
+          open={!!controller.editingId}
+          value={controller.editingMessage}
+          contacts={controller.contacts}
+          onChange={controller.handleEditChange}
+          onClose={controller.handleCancelEdit}
+          onSave={controller.handleSaveEdit}
           saving={false}
-          error={editError}
+          error={controller.editError}
           agendada={
-            messages.find((m) => m.id === editingId)?.status === "agendada"
+            controller.messages.find((m) => m.id === controller.editingId)
+              ?.status === "agendada"
           }
         />
       </DefaultMenu>

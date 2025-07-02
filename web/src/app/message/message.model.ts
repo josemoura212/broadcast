@@ -7,11 +7,14 @@ import {
   updateDoc,
   deleteDoc,
   getDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../../infra/services/firebase";
 
 export interface Message {
   id: string;
+  userId: string;
   content: string;
   status: "agendada" | "enviada";
   scheduledAt?: Date;
@@ -21,7 +24,9 @@ export interface Message {
 }
 
 export async function getMessages(userId: string): Promise<Message[]> {
-  const snapshot = await getDocs(collection(db, `clients/${userId}/messages`));
+  const snapshot = await getDocs(
+    query(collection(db, "messages"), where("userId", "==", userId))
+  );
   return snapshot.docs.map((doc) => {
     const data = doc.data();
     return {
@@ -50,8 +55,9 @@ export async function addMessage(params: {
   scheduledAt?: Date | null;
 }): Promise<void> {
   const { userId, content, contactIds, scheduledAt } = params;
-  await addDoc(collection(db, `clients/${userId}/messages`), {
+  await addDoc(collection(db, "messages"), {
     content,
+    userId,
     status: scheduledAt ? "agendada" : "enviada",
     scheduledAt: scheduledAt ? Timestamp.fromDate(scheduledAt) : null,
     sentAt: scheduledAt ? null : Timestamp.now(),
@@ -61,11 +67,10 @@ export async function addMessage(params: {
 }
 
 export async function updateMessage(
-  userId: string,
   messageId: string,
   updates: Partial<Pick<Message, "content" | "scheduledAt" | "contactIds">>
 ): Promise<void> {
-  const docRef = doc(collection(db, `clients/${userId}/messages`), messageId);
+  const docRef = doc(collection(db, "messages"), messageId);
   const snap = await getDoc(docRef);
   if (!snap.exists()) throw new Error("Mensagem não encontrada");
   const data = snap.data();
@@ -80,10 +85,7 @@ export async function updateMessage(
   await updateDoc(docRef, updateData);
 }
 
-export async function deleteMessage(
-  userId: string,
-  messageId: string
-): Promise<void> {
-  const docRef = doc(collection(db, `clients/${userId}/messages`), messageId);
+export async function deleteMessage(messageId: string): Promise<void> {
+  const docRef = doc(collection(db, "messages"), messageId);
   await deleteDoc(docRef);
 }

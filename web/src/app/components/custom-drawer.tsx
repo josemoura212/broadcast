@@ -15,6 +15,7 @@ import { DrawerItem } from "./drawer-item";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "@/infra/services/firebase";
+import { SelectConnection } from "./select-connection";
 
 interface CustomDrawerProps {
   onPinnedChange?: (isPinned: boolean) => void;
@@ -70,6 +71,12 @@ export function CustomDrawer({ onPinnedChange }: CustomDrawerProps) {
         </Tooltip>
       </Box>
       <Divider />
+      {isPinned && (
+        <>
+          <SelectConnection />
+          <Divider />
+        </>
+      )}
       <Box className="p-2 flex flex-col h-full">
         {menuItems.map((item, index) => (
           <DrawerItem

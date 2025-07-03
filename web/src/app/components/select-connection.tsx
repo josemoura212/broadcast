@@ -24,7 +24,7 @@ export function SelectConnection() {
   useEffect(() => {
     if (!conn) return;
     setSelectedConnection(conn.id);
-  }, []);
+  }, [conn]);
 
   function handlerSelectConnection(connectionId: string) {
     const conn = connections.find((c) => c.id === connectionId);

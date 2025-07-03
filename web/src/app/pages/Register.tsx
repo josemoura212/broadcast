@@ -12,7 +12,7 @@ export function Register() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (password !== confirmPassword) {
@@ -29,7 +29,7 @@ export function Register() {
     } catch (err: any) {
       setError("Erro ao criar conta. Verifique os dados e tente novamente.");
     }
-  };
+  }
 
   return (
     <FormsBox title="Criar Conta">

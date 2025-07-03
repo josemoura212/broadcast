@@ -71,12 +71,19 @@ export async function updateMessage(
   updates: Partial<Pick<Message, "content" | "scheduledAt" | "contactIds">>
 ): Promise<void> {
   const docRef = doc(collection(db, "messages"), messageId);
+
   const snap = await getDoc(docRef);
-  if (!snap.exists()) throw new Error("Mensagem não encontrada");
+  if (!snap.exists()) {
+    throw new Error("Mensagem não encontrada");
+  }
+
   const data = snap.data();
-  if (data.status !== "agendada")
+  if (data.status !== "agendada") {
     throw new Error("Só é possível editar mensagens agendadas");
+  }
+
   const updateData: any = { ...updates };
+
   if (updates.scheduledAt !== undefined) {
     updateData.scheduledAt = updates.scheduledAt
       ? Timestamp.fromDate(updates.scheduledAt)

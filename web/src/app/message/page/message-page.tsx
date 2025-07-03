@@ -69,11 +69,9 @@ export function MessagePage() {
                   {...(msg.status === "agendada"
                     ? {
                         onEdit: () => controller.handleStartEdit(msg),
-                        editLabel: "Editar",
                       }
                     : {})}
                   onDelete={() => controller.setConfirmDeleteId(msg.id)}
-                  deleteLabel="Remover"
                   divider={true}
                 />
               ))}

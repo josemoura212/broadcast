@@ -1,44 +1,33 @@
-import { ListItem, ListItemText, Button } from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+
+import { ListItem, ListItemText, IconButton, Tooltip } from "@mui/material";
 
 interface ActionListItemProps {
   primary: string;
   secondary?: string;
   onEdit?: () => void;
   onDelete: () => void;
-  editLabel?: string;
-  deleteLabel?: string;
   divider?: boolean;
 }
 
 export function ActionListItem(props: ActionListItemProps) {
-  const {
-    primary,
-    secondary,
-    onEdit,
-    onDelete,
-    editLabel = "Editar",
-    deleteLabel = "Remover",
-    divider = false,
-  } = props;
+  const { primary, secondary, onEdit, onDelete, divider = false } = props;
   ActionListItem;
   return (
     <ListItem divider={divider}>
       <ListItemText primary={primary} secondary={secondary} />
       {onEdit && (
-        <Button
-          variant="outlined"
-          color="primary"
-          size="small"
-          sx={{ mr: 1 }}
-          onClick={onEdit}
-          disabled={!onEdit}
-        >
-          {editLabel}
-        </Button>
+        <Tooltip title="Editar" arrow>
+          <IconButton onClick={onEdit} disabled={!onEdit}>
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
       )}
-      <Button variant="outlined" color="error" size="small" onClick={onDelete}>
-        {deleteLabel}
-      </Button>
+      <Tooltip title="Remover" arrow>
+        <IconButton onClick={onDelete} color="error" disabled={!onDelete}>
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
     </ListItem>
   );
 }

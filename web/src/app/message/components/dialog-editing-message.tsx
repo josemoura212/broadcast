@@ -1,4 +1,5 @@
 import { Contact } from "@/app/contact/contact.model";
+import { Box } from "@mui/material";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import Dialog from "@mui/material/Dialog";
@@ -52,7 +53,7 @@ export function DialogEditingMessage(props: DialogEditingMessageProps) {
   } = props;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Editar Mensagem</DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
@@ -103,6 +104,10 @@ export function DialogEditingMessage(props: DialogEditingMessageProps) {
         </Stack>
       </DialogContent>
       <DialogActions>
+        <Button color="primary" variant="contained">
+          Enviar Agora
+        </Button>
+        <Box sx={{ flexGrow: 1 }} />
         <Button onClick={onClose} color="inherit" disabled={saving}>
           Cancelar
         </Button>

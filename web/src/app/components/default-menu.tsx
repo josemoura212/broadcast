@@ -14,7 +14,7 @@ export function DefaultMenu({ children }: { children: React.ReactNode }) {
           isPinned ? "ml-42" : "ml-16"
         } `}
       >
-        <Paper className="p-3 w-full max-w-3xl mx-2">{children}</Paper>
+        <Paper className="p-3 w-full max-w-6xl mx-2">{children}</Paper>
       </Box>
     </>
   );

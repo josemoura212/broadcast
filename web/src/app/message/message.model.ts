@@ -102,3 +102,22 @@ export async function deleteMessage(messageId: string): Promise<void> {
   const docRef = doc(collection(db, "messages"), messageId);
   await deleteDoc(docRef);
 }
+
+export async function sendMessageNow(messageId: string): Promise<void> {
+  const docRef = doc(collection(db, "messages"), messageId);
+  const snap = await getDoc(docRef);
+  if (!snap.exists()) {
+    throw new Error("Mensagem não encontrada");
+  }
+
+  const data = snap.data();
+  if (data.status !== "agendada") {
+    throw new Error("Só é possível enviar mensagens agendadas");
+  }
+
+  await updateDoc(docRef, {
+    status: "enviada",
+    sentAt: Timestamp.now(),
+    scheduledAt: null,
+  });
+}

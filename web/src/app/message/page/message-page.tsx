@@ -1,6 +1,5 @@
 import { DefaultMenu } from "../../components/default-menu";
 import { ConfirmDialog } from "../../components/confirm-dialog";
-import { DialogEditingMessage } from "../components/dialog-editing-message";
 import { ActionListItem } from "../../components/action-list-item";
 import { formatDateTimeLocal } from "@/infra/utils/format-date-time-local";
 import Typography from "@mui/material/Typography";
@@ -10,9 +9,19 @@ import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import { useMessagePage } from "./use-message-page";
 import { MessageForm } from "../components/message-form";
+import { useState } from "react";
+import { Message } from "../message.model";
 
 export function MessagePage() {
   const controller = useMessagePage();
+
+  const [editingMode, setEditingMode] = useState(false);
+  const [editingMessage, setEditingMessage] = useState<Message | null>(null);
+
+  function onEditMessage(msg: Message) {
+    setEditingMode(true);
+    setEditingMessage(msg);
+  }
 
   return (
     <>
@@ -20,7 +29,11 @@ export function MessagePage() {
         <Typography variant="h6" mb={2}>
           Enviar Mensagem
         </Typography>
-        <MessageForm />
+        <MessageForm
+          editingMode={editingMode}
+          setEditingMode={setEditingMode}
+          message={editingMessage}
+        />
         <Stack direction="row" spacing={2} mb={2}>
           <Button
             variant={controller.filter === "all" ? "contained" : "outlined"}
@@ -68,7 +81,7 @@ export function MessagePage() {
                   }
                   {...(msg.status === "agendada"
                     ? {
-                        onEdit: () => controller.handleStartEdit(msg),
+                        onEdit: () => onEditMessage(msg),
                       }
                     : {})}
                   onDelete={() => controller.setConfirmDeleteId(msg.id)}
@@ -93,21 +106,6 @@ export function MessagePage() {
           }
           confirmText="Remover"
           confirmColor="error"
-        />
-        <DialogEditingMessage
-          open={!!controller.editingId}
-          value={controller.editingMessage}
-          contacts={controller.contacts}
-          onChange={controller.handleEditChange}
-          onClose={controller.handleCancelEdit}
-          onSave={controller.handleSaveEdit}
-          saving={false}
-          error={controller.editError}
-          agendada={
-            controller.messages.find((m) => m.id === controller.editingId)
-              ?.status === "agendada"
-          }
-          onSendNow={controller.handleSendNow}
         />
       </DefaultMenu>
     </>

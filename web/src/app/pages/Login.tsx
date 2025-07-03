@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography } from "@mui/material";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { FormsBox } from "../components/froms-box";
-import { auth } from "../../infra/services/firebase";
+import { auth, googleAuthProvider } from "../../infra/services/firebase";
+import { Google } from "@mui/icons-material";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     try {
@@ -20,7 +21,16 @@ export function Login() {
     } catch (err: any) {
       setError("E-mail ou senha inválidos.");
     }
-  };
+  }
+
+  async function handleGoogleLogin() {
+    try {
+      await signInWithPopup(auth, googleAuthProvider);
+      navigate("/");
+    } catch (err: any) {
+      setError("Erro ao fazer login com o Google.");
+    }
+  }
 
   return (
     <FormsBox title="Login">
@@ -65,6 +75,17 @@ export function Login() {
         onClick={() => navigate("/register")}
       >
         Criar conta
+      </Button>
+
+      <Button
+        color="primary"
+        fullWidth
+        variant="contained"
+        sx={{ mt: 4 }}
+        onClick={handleGoogleLogin}
+      >
+        <Google sx={{ mr: 1 }} style={{ fontSize: 20 }} />
+        Entrar com Google
       </Button>
     </FormsBox>
   );

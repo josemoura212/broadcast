@@ -82,6 +82,7 @@ export function MessagePage() {
                   {...(msg.status === "agendada"
                     ? {
                         onEdit: () => onEditMessage(msg),
+                        onSendNow: () => controller.handleSendNow(msg.id),
                       }
                     : {})}
                   onDelete={() => controller.setConfirmDeleteId(msg.id)}

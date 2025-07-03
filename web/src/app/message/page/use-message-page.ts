@@ -62,6 +62,7 @@ export interface MessageController {
     }>
   ) => void;
   handleSaveEdit: () => Promise<void>;
+  handleSendNow: () => Promise<void>;
   handleCancelEdit: () => void;
   handleRemoveMessage: (id: string) => Promise<void>;
 }
@@ -173,6 +174,29 @@ export function useMessagePage(): MessageController {
     }
   }
 
+  async function handleSendNow() {
+    if (
+      !user ||
+      !editingId ||
+      !editingMessage.content.trim() ||
+      editingMessage.contactIds.length === 0
+    )
+      return;
+    try {
+      await updateMessage(editingId, {
+        content: editingMessage.content.trim(),
+        contactIds: editingMessage.contactIds,
+        sentAt: new Date(),
+        status: "enviada",
+      });
+      setEditingId(null);
+      setEditingMessage({ content: "", scheduledAt: null, contactIds: [] });
+      setEditError("");
+    } catch (e: any) {
+      setEditError(e.message || "Erro ao enviar agora");
+    }
+  }
+
   function handleCancelEdit() {
     setEditingId(null);
     setEditingMessage({ content: "", scheduledAt: null, contactIds: [] });
@@ -210,6 +234,7 @@ export function useMessagePage(): MessageController {
     handleStartEdit,
     handleEditChange,
     handleSaveEdit,
+    handleSendNow,
     handleCancelEdit,
     handleRemoveMessage,
   };

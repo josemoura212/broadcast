@@ -107,6 +107,7 @@ export function MessagePage() {
             controller.messages.find((m) => m.id === controller.editingId)
               ?.status === "agendada"
           }
+          onSendNow={controller.handleSendNow}
         />
       </DefaultMenu>
     </>

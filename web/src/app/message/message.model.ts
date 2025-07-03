@@ -68,7 +68,12 @@ export async function addMessage(params: {
 
 export async function updateMessage(
   messageId: string,
-  updates: Partial<Pick<Message, "content" | "scheduledAt" | "contactIds">>
+  updates: Partial<
+    Pick<
+      Message,
+      "content" | "scheduledAt" | "contactIds" | "status" | "sentAt"
+    >
+  >
 ): Promise<void> {
   const docRef = doc(collection(db, "messages"), messageId);
 

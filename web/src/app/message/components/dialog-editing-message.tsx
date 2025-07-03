@@ -37,6 +37,7 @@ interface DialogEditingMessageProps {
   saving?: boolean;
   error?: string;
   agendada?: boolean;
+  onSendNow?: () => void;
 }
 
 export function DialogEditingMessage(props: DialogEditingMessageProps) {
@@ -50,6 +51,7 @@ export function DialogEditingMessage(props: DialogEditingMessageProps) {
     saving,
     error,
     agendada = true,
+    onSendNow,
   } = props;
 
   return (
@@ -104,7 +106,12 @@ export function DialogEditingMessage(props: DialogEditingMessageProps) {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button color="primary" variant="contained">
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={onSendNow}
+          disabled={saving}
+        >
           Enviar Agora
         </Button>
         <Box sx={{ flexGrow: 1 }} />

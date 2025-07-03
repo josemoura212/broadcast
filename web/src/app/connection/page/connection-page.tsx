@@ -38,9 +38,7 @@ export function ConnectionPage() {
         ) : (
           <Box sx={{ maxHeight: "60vh", overflowY: "auto" }}>
             <List>
-              {editingMode ? (
-                <></>
-              ) : (
+              {!editingMode &&
                 controller.connections.map((conn) => (
                   <ActionListItem
                     key={conn.id}
@@ -49,8 +47,7 @@ export function ConnectionPage() {
                     onDelete={() => controller.setConfirmDeleteId(conn.id)}
                     divider={true}
                   />
-                ))
-              )}
+                ))}
               {controller.connections.length === 0 && (
                 <Typography variant="body2" color="text.secondary">
                   Nenhuma conexão cadastrada.

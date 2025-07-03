@@ -34,69 +34,76 @@ export function MessagePage() {
           setEditingMode={setEditingMode}
           message={editingMessage}
         />
-        <Stack direction="row" spacing={2} mb={2}>
-          <Button
-            variant={controller.filter === "all" ? "contained" : "outlined"}
-            onClick={() => controller.setFilter("all")}
-          >
-            Todas
-          </Button>
-          <Button
-            variant={controller.filter === "enviada" ? "contained" : "outlined"}
-            onClick={() => controller.setFilter("enviada")}
-          >
-            Enviadas
-          </Button>
-          <Button
-            variant={
-              controller.filter === "agendada" ? "contained" : "outlined"
-            }
-            onClick={() => controller.setFilter("agendada")}
-          >
-            Agendadas
-          </Button>
-        </Stack>
-        <Typography variant="h6" mb={1}>
-          Mensagens
-        </Typography>
-        {controller.loading ? (
-          <Typography>Carregando...</Typography>
-        ) : (
-          <Box sx={{ overflowY: "auto" }}>
-            <List>
-              {controller.messages.map((msg) => (
-                <ActionListItem
-                  key={msg.id}
-                  primary={msg.content}
-                  secondary={
-                    `Status: ${msg.status} | Para: ${controller.contacts
-                      .filter((c) => msg.contactIds.includes(c.id))
-                      .map((c) => c.name)
-                      .join(", ")} | ` +
-                    (msg.status === "agendada"
-                      ? `\nAgendada para: ${formatDateTimeLocal(
-                          msg.scheduledAt
-                        )}`
-                      : `\nEnviada em: ${formatDateTimeLocal(msg.sentAt)}`)
-                  }
-                  {...(msg.status === "agendada"
-                    ? {
-                        onEdit: () => onEditMessage(msg),
-                        onSendNow: () => controller.handleSendNow(msg.id),
-                      }
-                    : {})}
-                  onDelete={() => controller.setConfirmDeleteId(msg.id)}
-                  divider={true}
-                />
-              ))}
-              {controller.messages.length === 0 && (
-                <Typography variant="body2" color="text.secondary">
-                  Nenhuma mensagem encontrada.
-                </Typography>
-              )}
-            </List>
-          </Box>
+        {!editingMode && (
+          <>
+            <Stack direction="row" spacing={2} mb={2}>
+              <Button
+                variant={controller.filter === "all" ? "contained" : "outlined"}
+                onClick={() => controller.setFilter("all")}
+              >
+                Todas
+              </Button>
+              <Button
+                variant={
+                  controller.filter === "enviada" ? "contained" : "outlined"
+                }
+                onClick={() => controller.setFilter("enviada")}
+              >
+                Enviadas
+              </Button>
+              <Button
+                variant={
+                  controller.filter === "agendada" ? "contained" : "outlined"
+                }
+                onClick={() => controller.setFilter("agendada")}
+              >
+                Agendadas
+              </Button>
+            </Stack>
+            <Typography variant="h6" mb={1}>
+              Mensagens
+            </Typography>
+          </>
         )}
+        {!editingMode &&
+          (controller.loading ? (
+            <Typography>Carregando...</Typography>
+          ) : (
+            <Box sx={{ overflowY: "auto" }}>
+              <List>
+                {controller.messages.map((msg) => (
+                  <ActionListItem
+                    key={msg.id}
+                    primary={msg.content}
+                    secondary={
+                      `Status: ${msg.status} | Para: ${controller.contacts
+                        .filter((c) => msg.contactIds.includes(c.id))
+                        .map((c) => c.name)
+                        .join(", ")} | ` +
+                      (msg.status === "agendada"
+                        ? `\nAgendada para: ${formatDateTimeLocal(
+                            msg.scheduledAt
+                          )}`
+                        : `\nEnviada em: ${formatDateTimeLocal(msg.sentAt)}`)
+                    }
+                    {...(msg.status === "agendada"
+                      ? {
+                          onEdit: () => onEditMessage(msg),
+                          onSendNow: () => controller.handleSendNow(msg.id),
+                        }
+                      : {})}
+                    onDelete={() => controller.setConfirmDeleteId(msg.id)}
+                    divider={true}
+                  />
+                ))}
+                {controller.messages.length === 0 && (
+                  <Typography variant="body2" color="text.secondary">
+                    Nenhuma mensagem encontrada.
+                  </Typography>
+                )}
+              </List>
+            </Box>
+          ))}
         <ConfirmDialog
           open={!!controller.confirmDeleteId}
           title="Confirmar remoção"

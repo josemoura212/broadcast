@@ -7,6 +7,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { ptBR } from "date-fns/locale";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
+import { ConnectionProvider } from "./context/connection-context";
 
 export function App() {
   return (
@@ -14,9 +15,11 @@ export function App() {
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
         <AuthProvider>
-          <Router>
-            <AppRoutes />
-          </Router>
+          <ConnectionProvider>
+            <Router>
+              <AppRoutes />
+            </Router>
+          </ConnectionProvider>
         </AuthProvider>
       </ThemeProvider>
     </LocalizationProvider>

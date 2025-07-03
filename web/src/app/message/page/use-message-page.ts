@@ -163,7 +163,7 @@ export function useMessagePage(): MessageController {
     try {
       await updateMessage(editingId, {
         content: editingMessage.content.trim(),
-        scheduledAt: editingMessage.scheduledAt ?? undefined,
+        scheduledAt: editingMessage.scheduledAt,
         contactIds: editingMessage.contactIds,
       });
       setEditingId(null);

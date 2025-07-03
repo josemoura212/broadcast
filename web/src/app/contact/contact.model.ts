@@ -24,7 +24,11 @@ export async function getContacts(userId: string): Promise<Contact[]> {
   return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Contact));
 }
 
-export async function addContact(contact: Omit<Contact, "id">): Promise<void> {
+export async function addContact(contact: {
+  userId: string;
+  name: string;
+  phone: string;
+}): Promise<void> {
   await addDoc(collection(db, "contacts"), contact);
 }
 
@@ -35,7 +39,10 @@ export async function deleteContact(contactId: string): Promise<void> {
 
 export async function updateContact(
   contactId: string,
-  contact: Partial<Omit<Contact, "id">>
+  contact: {
+    name: string;
+    phone: string;
+  }
 ): Promise<void> {
   const docRef = doc(collection(db, "contacts"), contactId);
   await updateDoc(docRef, contact);

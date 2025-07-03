@@ -68,12 +68,13 @@ export async function addMessage(params: {
 
 export async function updateMessage(
   messageId: string,
-  updates: Partial<
-    Pick<
-      Message,
-      "content" | "scheduledAt" | "contactIds" | "status" | "sentAt"
-    >
-  >
+  updates: {
+    content: string;
+    scheduledAt?: Date | null;
+    contactIds: string[];
+    status?: "agendada" | "enviada";
+    sentAt?: Date;
+  }
 ): Promise<void> {
   const docRef = doc(collection(db, "messages"), messageId);
 

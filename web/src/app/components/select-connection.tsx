@@ -5,9 +5,10 @@ import Select from "@mui/material/Select";
 import { useAuth } from "../context/auth-context";
 import { useConnection } from "../context/connection-context";
 import { useEffect, useState } from "react";
-import { Connection, getConnections } from "../connection/connection.model";
+import { Connection } from "../connection/connection.model";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemText from "@mui/material/ListItemText";
+import { useConnectionPage } from "../connection/page/use-connection-page";
 
 export function SelectConnection() {
   const { user } = useAuth();
@@ -15,11 +16,13 @@ export function SelectConnection() {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [selectedConnection, setSelectedConnection] = useState<string>("");
 
+  const controllerConnection = useConnectionPage();
+
   useEffect(() => {
     if (user?.uid) {
-      getConnections(user.uid).then(setConnections);
+      setConnections(controllerConnection.connections);
     }
-  }, [user?.uid]);
+  }, [controllerConnection.connections]);
 
   useEffect(() => {
     if (!conn) return;

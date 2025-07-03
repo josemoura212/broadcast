@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import { useAuth } from "@/app/context/auth-context";
 import { useEffect, useState } from "react";
 import { addContact, Contact, updateContact } from "../contact.model";
+import { useConnection } from "@/app/context/connection-context";
 
 interface ContactFormProps {
   contact?: Contact | null;
@@ -13,6 +14,7 @@ interface ContactFormProps {
 export function ContactForm(props: ContactFormProps) {
   const { contact, editingMode, setEditingMode } = props;
 
+  const { conn } = useConnection();
   const { user } = useAuth();
   const [newContact, setNewContact] = useState({ name: "", phone: "" });
 
@@ -27,7 +29,7 @@ export function ContactForm(props: ContactFormProps) {
 
   async function handlerSend(e: React.FormEvent) {
     e.preventDefault();
-    if (!user || !newContact.name.trim() || !newContact.phone.trim()) {
+    if (!user || !newContact.name.trim() || !newContact.phone.trim() || !conn) {
       return;
     }
 
@@ -43,6 +45,7 @@ export function ContactForm(props: ContactFormProps) {
     }
 
     await addContact({
+      connectionId: conn?.id,
       userId: user.uid,
       name: newContact.name.trim(),
       phone: newContact.phone.trim(),

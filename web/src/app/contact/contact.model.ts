@@ -12,20 +12,29 @@ import { db } from "../../infra/services/firebase";
 
 export interface Contact {
   id: string;
+  connectionId: string;
   userId: string;
   name: string;
   phone: string;
 }
 
-export async function getContacts(userId: string): Promise<Contact[]> {
+export async function getContacts(
+  userId: string,
+  connectionId: string
+): Promise<Contact[]> {
   const snapshot = await getDocs(
-    query(collection(db, "contacts"), where("userId", "==", userId))
+    query(
+      collection(db, "contacts"),
+      where("userId", "==", userId),
+      where("connectionId", "==", connectionId)
+    )
   );
   return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Contact));
 }
 
 export async function addContact(contact: {
   userId: string;
+  connectionId: string;
   name: string;
   phone: string;
 }): Promise<void> {

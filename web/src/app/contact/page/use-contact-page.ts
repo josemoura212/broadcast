@@ -10,6 +10,7 @@ import {
 import { useMemo, useState } from "react";
 import { Contact, deleteContact } from "../contact.model";
 import { useSnapshot } from "@/app/hooks/firestore-hooks";
+import { useConnection } from "@/app/context/connection-context";
 
 export interface ContactController {
   confirmDeleteId: string | null;
@@ -21,6 +22,7 @@ export interface ContactController {
 
 export function useContactPage() {
   const { user } = useAuth();
+  const { conn } = useConnection();
 
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
@@ -29,9 +31,10 @@ export function useContactPage() {
       query(
         collection(db, "contacts") as CollectionReference<Contact>,
         orderBy("name"),
-        where("userId", "==", user?.uid)
+        where("userId", "==", user?.uid),
+        where("connectionId", "==", conn?.id)
       ),
-    [user?.uid]
+    [user?.uid, conn?.id]
   );
 
   const { state: contacts, loading } = useSnapshot<Contact>(ref);

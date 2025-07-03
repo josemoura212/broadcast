@@ -20,11 +20,9 @@ interface MessageFormProps {
   setEditingMode: (editing: boolean) => void;
 }
 
-export function MessageForm({
-  editingMode,
-  setEditingMode,
-  message,
-}: MessageFormProps) {
+export function MessageForm(props: MessageFormProps) {
+  const { editingMode, setEditingMode, message } = props;
+
   const controller = useMessagePage();
   const { user } = useAuth();
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);

@@ -1,39 +1,93 @@
 import TextField from "@mui/material/TextField";
-import { useContactPage } from "../page/use-contact-page";
 import Button from "@mui/material/Button";
+import { useAuth } from "@/app/context/auth-context";
+import { useEffect, useState } from "react";
+import { addContact, Contact, updateContact } from "../contact.model";
 
-export function ContactForm() {
-  const { controller } = useContactPage();
+interface ContactFormProps {
+  contact?: Contact | null;
+  editingMode: boolean;
+  setEditingMode: (editing: boolean) => void;
+}
+
+export function ContactForm(props: ContactFormProps) {
+  const { contact, editingMode, setEditingMode } = props;
+
+  const { user } = useAuth();
+  const [newContact, setNewContact] = useState({ name: "", phone: "" });
+
+  useEffect(() => {
+    if (editingMode && contact) {
+      setNewContact({ name: contact.name, phone: contact.phone });
+    }
+    if (!editingMode) {
+      setNewContact({ name: "", phone: "" });
+    }
+  }, [editingMode, contact]);
+
+  async function handlerSend(e: React.FormEvent) {
+    e.preventDefault();
+    if (!user || !newContact.name.trim() || !newContact.phone.trim()) {
+      return;
+    }
+
+    if (editingMode) {
+      if (!contact) return;
+      await updateContact(contact.id, {
+        name: newContact.name.trim(),
+        phone: newContact.phone.trim(),
+      });
+      setEditingMode(false);
+      setNewContact({ name: "", phone: "" });
+      return;
+    }
+
+    await addContact({
+      userId: user.uid,
+      name: newContact.name.trim(),
+      phone: newContact.phone.trim(),
+    });
+    setNewContact({ name: "", phone: "" });
+  }
 
   return (
     <form
-      onSubmit={controller.handleAddContact}
+      onSubmit={handlerSend}
       className="flex gap-3 mb-3 items-start flex-col"
     >
       <TextField
         label="Nome do contato"
-        value={controller.newContact.name}
-        onChange={(e) =>
-          controller.setNewContact((c) => ({ ...c, name: e.target.value }))
-        }
+        value={newContact.name}
+        onChange={(e) => setNewContact((c) => ({ ...c, name: e.target.value }))}
         size="small"
         fullWidth
         required
       />
       <TextField
         label="Telefone"
-        value={controller.newContact.phone}
+        value={newContact.phone}
         onChange={(e) => {
           const onlyNumbers = e.target.value.replace(/\D/g, "");
-          controller.setNewContact((c) => ({ ...c, phone: onlyNumbers }));
+          setNewContact((c) => ({ ...c, phone: onlyNumbers }));
         }}
         size="small"
         fullWidth
         required
       />
       <Button type="submit" variant="contained" color="primary" fullWidth>
-        Adicionar
+        {editingMode ? "Salvar" : "Adicionar"}
       </Button>
+      {editingMode && (
+        <Button
+          type="button"
+          variant="contained"
+          color="error"
+          fullWidth
+          onClick={() => setEditingMode(false)}
+        >
+          Cancelar
+        </Button>
+      )}
     </form>
   );
 }

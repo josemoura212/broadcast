@@ -29,7 +29,7 @@ export function ConnectionForm(props: ConnectionFormProps) {
     }
   }, [editingMode, connection]);
 
-  async function handleAddConnection(e: React.FormEvent) {
+  async function handlerSend(e: React.FormEvent) {
     e.preventDefault();
     if (!user || !newConnection.trim()) {
       return;
@@ -48,10 +48,7 @@ export function ConnectionForm(props: ConnectionFormProps) {
   }
 
   return (
-    <form
-      onSubmit={handleAddConnection}
-      className="flex gap-3 mb-3 items-start"
-    >
+    <form onSubmit={handlerSend} className="flex gap-3 mb-3 items-start">
       <TextField
         label="Nome da conexão"
         value={newConnection}

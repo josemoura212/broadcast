@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { TextField, Button, Typography } from "@mui/material";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../infra/services/firebase";
 import { useNavigate } from "react-router-dom";
 import { FormsBox } from "../components/froms-box";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 
 export function Register() {
   const [email, setEmail] = useState("");

@@ -16,6 +16,7 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "@/infra/services/firebase";
 import { SelectConnection } from "./select-connection";
+import { useConnection } from "../context/connection-context";
 
 interface CustomDrawerProps {
   onPinnedChange?: (isPinned: boolean) => void;
@@ -24,6 +25,8 @@ interface CustomDrawerProps {
 const DRAWER_KEY = "drawerPinned";
 
 export function CustomDrawer({ onPinnedChange }: CustomDrawerProps) {
+  const { conn } = useConnection();
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPinned, setIsPinned] = useState(
     JSON.parse(localStorage.getItem(DRAWER_KEY) ?? "false")
@@ -47,10 +50,11 @@ export function CustomDrawer({ onPinnedChange }: CustomDrawerProps) {
 
   const currentWidth = isExpanded || isPinned ? drawerWidth : collapsedWidth;
 
-  const handleLogout = async () => {
+  async function handleLogout() {
+    localStorage.clear();
     await signOut(auth);
     navigate("/login");
-  };
+  }
 
   return (
     <Box
@@ -78,16 +82,17 @@ export function CustomDrawer({ onPinnedChange }: CustomDrawerProps) {
         </>
       )}
       <Box className="p-2 flex flex-col h-full">
-        {menuItems.map((item, index) => (
-          <DrawerItem
-            key={index}
-            icon={item.icon}
-            label={item.label}
-            path={item.path}
-            isExpanded={isExpanded}
-            isPinned={isPinned}
-          />
-        ))}
+        {conn &&
+          menuItems.map((item, index) => (
+            <DrawerItem
+              key={index}
+              icon={item.icon}
+              label={item.label}
+              path={item.path}
+              isExpanded={isExpanded}
+              isPinned={isPinned}
+            />
+          ))}
         <Box className="flex-1" />
         <DrawerItem
           icon={<Logout />}

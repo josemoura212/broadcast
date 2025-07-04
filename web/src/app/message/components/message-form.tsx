@@ -13,6 +13,7 @@ import { useAuth } from "@/app/context/auth-context";
 import { useEffect, useState } from "react";
 import { addMessage, Message, updateMessage } from "../message.model";
 import { toDate } from "@/infra/utils/to-date";
+import { useConnection } from "@/app/context/connection-context";
 
 interface MessageFormProps {
   message?: Message | null;
@@ -25,6 +26,8 @@ export function MessageForm(props: MessageFormProps) {
 
   const controller = useMessagePage();
   const { user } = useAuth();
+  const { conn } = useConnection();
+
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const [content, setContent] = useState("");
   const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
@@ -59,10 +62,12 @@ export function MessageForm(props: MessageFormProps) {
       return;
     }
     e.preventDefault();
-    if (!user || !content.trim() || selectedContacts.length === 0) return;
+    if (!user || !conn || !content.trim() || selectedContacts.length === 0)
+      return;
 
     await addMessage({
       userId: user.uid,
+      connectionId: conn.id,
       content: content.trim(),
       contactIds: selectedContacts,
       scheduledAt: scheduledAt ?? undefined,

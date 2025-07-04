@@ -11,6 +11,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { deleteMessage, Message, sendMessageNow } from "../message.model";
 import { useSnapshot } from "@/app/hooks/firestore-hooks";
+import { useConnection } from "@/app/context/connection-context";
 
 export interface MessageController {
   filter: "enviada" | "agendada" | "all";
@@ -29,16 +30,17 @@ export interface MessageController {
 
 export function useMessagePage(): MessageController {
   const { user } = useAuth();
+  const { conn } = useConnection();
 
   const [filter, setFilter] = useState<"enviada" | "agendada" | "all">("all");
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user?.uid) {
-      getContacts(user.uid).then(setContacts);
+    if (user?.uid && conn?.id) {
+      getContacts(user.uid, conn.id).then(setContacts);
     }
-  }, [user?.uid]);
+  }, [user?.uid, conn?.id]);
 
   const refMessages = useMemo(() => {
     const messagesRef = collection(
@@ -51,16 +53,18 @@ export function useMessagePage(): MessageController {
         messagesRef,
         where("status", "==", filter),
         orderBy("createdAt", "desc"),
-        where("userId", "==", user?.uid)
+        where("userId", "==", user?.uid),
+        where("connectionId", "==", conn?.id)
       );
     }
 
     return query(
       messagesRef,
       orderBy("createdAt", "desc"),
-      where("userId", "==", user?.uid)
+      where("userId", "==", user?.uid),
+      where("connectionId", "==", conn?.id)
     );
-  }, [user?.uid, filter]);
+  }, [user?.uid, filter, conn?.id]);
 
   const { state: messages, loading } = useSnapshot<Message>(refMessages);
 

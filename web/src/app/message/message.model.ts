@@ -15,6 +15,7 @@ import { db } from "../../infra/services/firebase";
 export interface Message {
   id: string;
   userId: string;
+  connectionId: string;
   content: string;
   status: "agendada" | "enviada";
   scheduledAt?: Date;
@@ -23,9 +24,16 @@ export interface Message {
   contactIds: string[];
 }
 
-export async function getMessages(userId: string): Promise<Message[]> {
+export async function getMessages(
+  userId: string,
+  connectionId: string
+): Promise<Message[]> {
   const snapshot = await getDocs(
-    query(collection(db, "messages"), where("userId", "==", userId))
+    query(
+      collection(db, "messages"),
+      where("userId", "==", userId),
+      where("connectionId", "==", connectionId)
+    )
   );
   return snapshot.docs.map((doc) => {
     const data = doc.data();
@@ -50,14 +58,16 @@ export async function getMessages(userId: string): Promise<Message[]> {
 
 export async function addMessage(params: {
   userId: string;
+  connectionId: string;
   content: string;
   contactIds: string[];
   scheduledAt?: Date | null;
 }): Promise<void> {
-  const { userId, content, contactIds, scheduledAt } = params;
+  const { userId, connectionId, content, contactIds, scheduledAt } = params;
   await addDoc(collection(db, "messages"), {
     content,
     userId,
+    connectionId,
     status: scheduledAt ? "agendada" : "enviada",
     scheduledAt: scheduledAt ? Timestamp.fromDate(scheduledAt) : null,
     sentAt: scheduledAt ? null : Timestamp.now(),

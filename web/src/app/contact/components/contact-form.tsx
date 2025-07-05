@@ -1,9 +1,10 @@
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useAuth } from "@/app/context/auth-context";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { addContact, Contact, updateContact } from "../contact.model";
 import { useConnection } from "@/app/context/connection-context";
+import { useForm } from "react-hook-form";
+import { ControlledTextField } from "@/app/components/controlled-text-field";
 
 interface ContactFormProps {
   contact?: Contact | null;
@@ -11,71 +12,78 @@ interface ContactFormProps {
   setEditingMode: (editing: boolean) => void;
 }
 
+interface ContactFormData {
+  name: string;
+  phone: string;
+}
+
 export function ContactForm(props: ContactFormProps) {
   const { contact, editingMode, setEditingMode } = props;
 
   const { conn } = useConnection();
   const { user } = useAuth();
-  const [newContact, setNewContact] = useState({ name: "", phone: "" });
+
+  const { control, handleSubmit, reset, setValue } = useForm<ContactFormData>({
+    defaultValues: {
+      name: "",
+      phone: "",
+    },
+  });
 
   useEffect(() => {
     if (editingMode && contact) {
-      setNewContact({ name: contact.name, phone: contact.phone });
+      setValue("name", contact.name);
+      setValue("phone", contact.phone);
     }
     if (!editingMode) {
-      setNewContact({ name: "", phone: "" });
+      reset();
     }
-  }, [editingMode, contact]);
+  }, [editingMode, contact, setValue, reset]);
 
-  async function handlerSend(e: React.FormEvent) {
-    e.preventDefault();
-    if (!user || !newContact.name.trim() || !newContact.phone.trim() || !conn) {
+  async function onSubmit(data: ContactFormData) {
+    if (!user || !data.name.trim() || !data.phone.trim() || !conn) {
       return;
     }
 
     if (editingMode) {
       if (!contact) return;
       await updateContact(contact.id, {
-        name: newContact.name.trim(),
-        phone: newContact.phone.trim(),
+        name: data.name.trim(),
+        phone: data.phone.trim(),
       });
       setEditingMode(false);
-      setNewContact({ name: "", phone: "" });
+      reset();
       return;
     }
 
     await addContact({
       connectionId: conn?.id,
       userId: user.uid,
-      name: newContact.name.trim(),
-      phone: newContact.phone.trim(),
+      name: data.name.trim(),
+      phone: data.phone.trim(),
     });
-    setNewContact({ name: "", phone: "" });
+    reset();
   }
 
   return (
     <form
-      onSubmit={handlerSend}
+      onSubmit={handleSubmit(onSubmit)}
       className="flex gap-3 mb-3 items-start flex-col"
     >
-      <TextField
+      <ControlledTextField<ContactFormData>
+        name="name"
+        control={control}
+        rules={{ required: "Nome do contato é obrigatório" }}
         label="Nome do contato"
-        value={newContact.name}
-        onChange={(e) => setNewContact((c) => ({ ...c, name: e.target.value }))}
-        size="small"
-        fullWidth
-        required
+        margin="none"
       />
-      <TextField
+      <ControlledTextField<ContactFormData>
+        name="phone"
+        control={control}
+        rules={{ required: "Telefone é obrigatório" }}
         label="Telefone"
-        value={newContact.phone}
-        onChange={(e) => {
-          const onlyNumbers = e.target.value.replace(/\D/g, "");
-          setNewContact((c) => ({ ...c, phone: onlyNumbers }));
-        }}
-        size="small"
-        fullWidth
-        required
+        numbersOnly
+        margin="none"
       />
       <Button type="submit" variant="contained" color="primary" fullWidth>
         {editingMode ? "Salvar" : "Adicionar"}

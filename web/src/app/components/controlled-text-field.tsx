@@ -9,6 +9,7 @@ interface ControlledTextFieldProps<T extends FieldValues>
   name: FieldPath<T>;
   control: Control<T>;
   rules?: any;
+  numbersOnly?: boolean; // Prop para aceitar apenas números
 }
 
 export function ControlledTextField<T extends FieldValues>({
@@ -17,6 +18,7 @@ export function ControlledTextField<T extends FieldValues>({
   rules,
   type,
   margin,
+  numbersOnly = false,
   ...textFieldProps
 }: ControlledTextFieldProps<T>) {
   const [showPassword, setShowPassword] = useState(false);
@@ -60,6 +62,15 @@ export function ControlledTextField<T extends FieldValues>({
         <TextField
           {...field}
           value={field.value || ""}
+          onChange={(e) => {
+            if (numbersOnly) {
+              // Transform: aceita apenas números (abordagem oficial do RHF)
+              const numbersOnly = e.target.value.replace(/\D/g, "");
+              field.onChange(numbersOnly);
+            } else {
+              field.onChange(e.target.value);
+            }
+          }}
           {...textFieldProps}
           {...passwordProps}
           type={inputType}
@@ -69,6 +80,9 @@ export function ControlledTextField<T extends FieldValues>({
           fullWidth
           autoFocus
           margin={margin || "normal"}
+          inputProps={{
+            ...(numbersOnly && { inputMode: "numeric" as const }),
+          }}
         />
       )}
     />

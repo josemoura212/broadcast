@@ -82,17 +82,20 @@ export function CustomDrawer({ onPinnedChange }: CustomDrawerProps) {
         </>
       )}
       <Box className="p-2 flex flex-col h-full">
-        {conn &&
-          menuItems.map((item, index) => (
-            <DrawerItem
-              key={index}
-              icon={item.icon}
-              label={item.label}
-              path={item.path}
-              isExpanded={isExpanded}
-              isPinned={isPinned}
-            />
-          ))}
+        {menuItems.map((item, index) => {
+          if (conn || item.label === "Home") {
+            return (
+              <DrawerItem
+                key={index}
+                icon={item.icon}
+                label={item.label}
+                path={item.path}
+                isExpanded={isExpanded}
+                isPinned={isPinned}
+              />
+            );
+          }
+        })}
         <Box className="flex-1" />
         <DrawerItem
           icon={<Logout />}

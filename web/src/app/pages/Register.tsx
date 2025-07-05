@@ -1,73 +1,79 @@
-import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../infra/services/firebase";
 import { useNavigate } from "react-router-dom";
 import { FormsBox } from "../components/froms-box";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
+import { ControlledTextField } from "../components/controlled-text-field";
 import Button from "@mui/material/Button";
 
-export function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+interface RegisterForm {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
-  async function handleRegister(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    if (password !== confirmPassword) {
-      setError("As senhas não coincidem.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres.");
-      return;
-    }
+export function Register() {
+  const { handleSubmit, setError, control, watch } = useForm<RegisterForm>();
+
+  const navigate = useNavigate();
+  const password = watch("password");
+
+  async function onSubmit(data: RegisterForm) {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      await createUserWithEmailAndPassword(auth, data.email, data.password);
       navigate("/");
-    } catch (err: any) {
-      setError("Erro ao criar conta. Verifique os dados e tente novamente.");
+    } catch (error: any) {
+      const errorCode = error.code;
+      console.error("Register error:", errorCode, error.message);
+
+      switch (errorCode) {
+        case "auth/email-already-in-use":
+          setError("email", { message: "E-mail já cadastrado." });
+          break;
+
+        default:
+          setError("email", {
+            message: "Erro ao criar conta. Tente novamente mais tarde.",
+          });
+          break;
+      }
     }
   }
 
   return (
     <FormsBox title="Criar Conta">
-      <form onSubmit={handleRegister}>
-        <TextField
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <ControlledTextField
+          name="email"
+          control={control}
           label="E-mail"
           type="email"
-          fullWidth
-          margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          rules={{ required: "E-mail obrigatório" }}
         />
-        <TextField
+        <ControlledTextField
+          name="password"
+          control={control}
           label="Senha"
           type="password"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          rules={{
+            required: "Senha obrigatória",
+            minLength: {
+              value: 6,
+              message: "A senha deve ter pelo menos 6 caracteres",
+            },
+          }}
         />
-        <TextField
+        <ControlledTextField
+          name="confirmPassword"
+          control={control}
           label="Confirmar Senha"
           type="password"
-          fullWidth
-          margin="normal"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
+          rules={{
+            required: "Confirmação de senha obrigatória",
+            validate: (value: string) =>
+              value === password || "As senhas não coincidem",
+          }}
         />
-        {error && (
-          <Typography color="error" variant="body2">
-            {error}
-          </Typography>
-        )}
         <Button
           type="submit"
           variant="contained"

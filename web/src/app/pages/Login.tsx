@@ -1,27 +1,51 @@
-import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { FormsBox } from "../components/froms-box";
+import { ControlledTextField } from "../components/controlled-text-field";
 import { auth, googleAuthProvider } from "../../infra/services/firebase";
 import { Google } from "@mui/icons-material";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 
+interface LoginForm {
+  email: string;
+  password: string;
+}
+
 export function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const { handleSubmit, setError, control } = useForm<LoginForm>();
+
   const navigate = useNavigate();
 
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
+  async function onSubmit(data: LoginForm) {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, data.email, data.password);
       navigate("/");
-    } catch (err: any) {
-      setError("E-mail ou senha inválidos.");
+    } catch (error: any) {
+      const errorCode = error.code;
+      console.error("Login error:", errorCode, error.message);
+
+      switch (errorCode) {
+        case "auth/invalid-credential":
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+          setError("email", { message: "E-mail ou senha inválidos." });
+          setError("password", { message: "" });
+          break;
+
+        case "auth/account-exists-with-different-credential":
+          setError("email", {
+            message:
+              "Esta conta foi criada com Google. Use o botão 'Entrar com Google' abaixo.",
+          });
+          break;
+
+        default:
+          setError("email", {
+            message: "Erro ao fazer login. Tente novamente.",
+          });
+          break;
+      }
     }
   }
 
@@ -29,37 +53,45 @@ export function Login() {
     try {
       await signInWithPopup(auth, googleAuthProvider);
       navigate("/");
-    } catch (err: any) {
-      setError("Erro ao fazer login com o Google.");
+    } catch (error: any) {
+      const errorCode = error.code;
+
+      switch (errorCode) {
+        case "auth/popup-closed-by-user":
+          setError("email", { message: "Login cancelado pelo usuário." });
+          break;
+
+        case "auth/popup-blocked":
+          setError("email", {
+            message:
+              "Pop-up bloqueado. Permita pop-ups para este site e tente novamente.",
+          });
+          break;
+
+        default:
+          setError("email", { message: "Erro ao fazer login com Google." });
+          break;
+      }
     }
   }
 
   return (
     <FormsBox title="Login">
-      <form onSubmit={handleLogin}>
-        <TextField
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <ControlledTextField<LoginForm>
+          name="email"
+          control={control}
+          rules={{ required: "E-mail obrigatório" }}
           label="E-mail"
           type="email"
-          fullWidth
-          margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
         />
-        <TextField
+        <ControlledTextField<LoginForm>
+          name="password"
+          control={control}
+          rules={{ required: "Senha obrigatória" }}
           label="Senha"
           type="password"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
         />
-        {error && (
-          <Typography color="error" variant="body2">
-            {error}
-          </Typography>
-        )}
         <Button
           type="submit"
           variant="contained"
@@ -70,6 +102,7 @@ export function Login() {
           Entrar
         </Button>
       </form>
+
       <Button
         color="secondary"
         fullWidth

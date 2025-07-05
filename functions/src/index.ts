@@ -3,7 +3,7 @@ import { db, timestamp } from "./firebase-config";
 
 export const processScheduledMessages = functions.pubsub
   .schedule("every 1 minutes")
-  .onRun(async (context) => {
+  .onRun(async (_) => {
     const now = timestamp.now();
 
     const scheduledMessagesSnap = await db
@@ -12,13 +12,24 @@ export const processScheduledMessages = functions.pubsub
       .where("scheduledAt", "<=", now)
       .get();
 
-    if (!scheduledMessagesSnap.empty) {
-      for (const msgDoc of scheduledMessagesSnap.docs) {
-        await msgDoc.ref.update({
-          status: "enviada",
-          sentAt: now,
-        });
+    if (scheduledMessagesSnap.empty === true) return;
+
+    const results = await Promise.allSettled(
+      scheduledMessagesSnap.docs.map(
+        async (doc) =>
+          await doc.ref.update({
+            status: "enviada",
+            sentAt: now,
+          })
+      )
+    );
+
+    results.forEach((result, index) => {
+      if (result.status !== "fulfilled") {
+        console.error(
+          `Erro ao atualizar mensagem ${scheduledMessagesSnap.docs[index].id}:`,
+          result.reason
+        );
       }
-    }
-    return null;
+    });
   });

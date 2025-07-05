@@ -1,7 +1,8 @@
 import { useAuth } from "@/app/context/auth-context";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { ControlledTextField } from "@/app/components/controlled-text-field";
 import {
   addConnection,
   Connection,
@@ -14,59 +15,64 @@ interface ConnectionFormProps {
   setEditingMode: (editing: boolean) => void;
 }
 
+interface ConnectionFormData {
+  name: string;
+}
+
 export function ConnectionForm(props: ConnectionFormProps) {
   const { editingMode, setEditingMode, connection } = props;
-
   const { user } = useAuth();
-  const [newConnection, setNewConnection] = useState("");
+
+  const { handleSubmit, setError, reset, control } =
+    useForm<ConnectionFormData>();
 
   useEffect(() => {
     if (editingMode && connection) {
-      setNewConnection(connection.name);
+      reset({ name: connection.name });
+    } else {
+      reset({ name: "" });
     }
-    if (!editingMode) {
-      setNewConnection("");
-    }
-  }, [editingMode, connection]);
+  }, [editingMode, connection, reset]);
 
-  async function handlerSend(e: React.FormEvent) {
-    e.preventDefault();
-    if (!user || !newConnection.trim()) {
-      return;
-    }
+  async function onSubmit(data: ConnectionFormData) {
+    if (!user) return;
 
-    if (editingMode) {
-      if (!connection) return;
-      await updateConnection(connection.id, newConnection.trim());
-      setEditingMode(false);
-      setNewConnection("");
-      return;
+    try {
+      if (editingMode) {
+        if (!connection) return;
+        await updateConnection(connection.id, data.name.trim());
+        setEditingMode(false);
+      } else {
+        await addConnection(user.uid, data.name.trim());
+      }
+      reset({ name: "" });
+    } catch (error) {
+      setError("name", { message: "Erro ao salvar conexão" });
     }
-
-    await addConnection(user.uid, newConnection.trim());
-    setNewConnection("");
   }
 
+  const handleCancel = () => {
+    setEditingMode(false);
+    reset({ name: "" });
+  };
+
   return (
-    <form onSubmit={handlerSend} className="flex gap-3 mb-3 items-start">
-      <TextField
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex gap-3 mb-3 items-start"
+    >
+      <ControlledTextField
+        name="name"
+        control={control}
+        rules={{ required: "Nome da conexão obrigatório" }}
         label="Nome da conexão"
-        value={newConnection}
-        onChange={(e) => setNewConnection(e.target.value)}
-        size="small"
-        fullWidth
-        required
-        autoFocus
+        margin="none"
       />
       <Button type="submit" variant="contained" color="primary">
         {editingMode ? "Salvar" : "Adicionar"}
       </Button>
       {editingMode && (
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => setEditingMode(false)}
-        >
+        <Button variant="contained" color="error" onClick={handleCancel}>
           Cancelar
         </Button>
       )}

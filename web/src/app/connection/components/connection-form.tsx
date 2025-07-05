@@ -66,7 +66,7 @@ export function ConnectionForm(props: ConnectionFormProps) {
         control={control}
         rules={{ required: "Nome da conexão obrigatório" }}
         label="Nome da conexão"
-        margin="none"
+        autoFocus
       />
       <Button type="submit" variant="contained" color="primary">
         {editingMode ? "Salvar" : "Adicionar"}

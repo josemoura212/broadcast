@@ -75,6 +75,7 @@ export function ContactForm(props: ContactFormProps) {
         control={control}
         rules={{ required: "Nome do contato é obrigatório" }}
         label="Nome do contato"
+        autoFocus
       />
       <ControlledTextField<ContactFormData>
         name="phone"

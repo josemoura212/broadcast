@@ -9,7 +9,7 @@ interface ControlledTextFieldProps<T extends FieldValues>
   name: FieldPath<T>;
   control: Control<T>;
   rules?: any;
-  numbersOnly?: boolean; // Prop para aceitar apenas números
+  numbersOnly?: boolean;
 }
 
 export function ControlledTextField<T extends FieldValues>({
@@ -17,7 +17,6 @@ export function ControlledTextField<T extends FieldValues>({
   control,
   rules,
   type,
-  margin,
   numbersOnly = false,
   ...textFieldProps
 }: ControlledTextFieldProps<T>) {
@@ -77,8 +76,6 @@ export function ControlledTextField<T extends FieldValues>({
           helperText={error?.message}
           size="small"
           fullWidth
-          autoFocus
-          margin={margin || "none"}
         />
       )}
     />

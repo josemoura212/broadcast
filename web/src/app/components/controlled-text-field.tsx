@@ -64,7 +64,6 @@ export function ControlledTextField<T extends FieldValues>({
           value={field.value || ""}
           onChange={(e) => {
             if (numbersOnly) {
-              // Transform: aceita apenas números (abordagem oficial do RHF)
               const numbersOnly = e.target.value.replace(/\D/g, "");
               field.onChange(numbersOnly);
             } else {
@@ -79,10 +78,7 @@ export function ControlledTextField<T extends FieldValues>({
           size="small"
           fullWidth
           autoFocus
-          margin={margin || "normal"}
-          inputProps={{
-            ...(numbersOnly && { inputMode: "numeric" as const }),
-          }}
+          margin={margin || "none"}
         />
       )}
     />

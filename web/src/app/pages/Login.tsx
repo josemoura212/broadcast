@@ -77,7 +77,10 @@ export function Login() {
 
   return (
     <FormsBox title="Login">
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex gap-3 items-start flex-col"
+      >
         <ControlledTextField<LoginForm>
           name="email"
           control={control}

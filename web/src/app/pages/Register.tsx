@@ -42,7 +42,10 @@ export function Register() {
 
   return (
     <FormsBox title="Criar Conta">
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex gap-3 items-start flex-col"
+      >
         <ControlledTextField
           name="email"
           control={control}

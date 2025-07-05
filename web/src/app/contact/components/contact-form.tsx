@@ -75,7 +75,6 @@ export function ContactForm(props: ContactFormProps) {
         control={control}
         rules={{ required: "Nome do contato é obrigatório" }}
         label="Nome do contato"
-        margin="none"
       />
       <ControlledTextField<ContactFormData>
         name="phone"
@@ -83,7 +82,6 @@ export function ContactForm(props: ContactFormProps) {
         rules={{ required: "Telefone é obrigatório" }}
         label="Telefone"
         numbersOnly
-        margin="none"
       />
       <Button type="submit" variant="contained" color="primary" fullWidth>
         {editingMode ? "Salvar" : "Adicionar"}

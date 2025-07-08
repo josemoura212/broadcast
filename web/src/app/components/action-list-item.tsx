@@ -22,7 +22,7 @@ export function ActionListItem(props: ActionListItemProps) {
     onEdit,
     onDelete,
     onSendNow,
-    divider = false,
+    divider = true,
   } = props;
   ActionListItem;
   return (

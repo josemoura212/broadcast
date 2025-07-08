@@ -29,10 +29,7 @@ export function useContact(userId: string, connectionId: string) {
   );
 }
 
-export function getContacts$(
-  userId: string,
-  connectionId: string
-): Observable<Contact[]> {
+export function getContacts$(userId: string, connectionId: string) {
   return new Observable<Contact[]>((subscriber) => {
     const unsubscribe = onSnapshot(
       query(

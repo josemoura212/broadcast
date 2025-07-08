@@ -1,7 +1,6 @@
 import {
   addDoc,
   collection,
-  getDocs,
   Timestamp,
   doc,
   updateDoc,
@@ -9,8 +8,13 @@ import {
   getDoc,
   query,
   where,
+  onSnapshot,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../../core/services/firebase";
+import { Observable, shareReplay } from "rxjs";
+import { snapToData } from "@/core/utils/firebase";
+import { useObservable$ } from "../hooks/firestore-hooks";
 
 export interface Message {
   id: string;
@@ -24,35 +28,37 @@ export interface Message {
   contactIds: string[];
 }
 
-export async function getMessages(
+export function useMessages(
   userId: string,
-  connectionId: string
-): Promise<Message[]> {
-  const snapshot = await getDocs(
-    query(
-      collection(db, "messages"),
-      where("userId", "==", userId),
-      where("connectionId", "==", connectionId)
-    )
+  connectionId: string,
+  status?: "agendada" | "enviada"
+) {
+  return useObservable$<Message>(
+    () => getMessages$(userId, connectionId, status).pipe(shareReplay(1)),
+    [userId, connectionId, status]
   );
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      ...data,
-      sentAt:
-        data.sentAt && typeof data.sentAt.toDate === "function"
-          ? data.sentAt.toDate()
-          : undefined,
-      scheduledAt:
-        data.scheduledAt && typeof data.scheduledAt.toDate === "function"
-          ? data.scheduledAt.toDate()
-          : undefined,
-      createdAt:
-        data.createdAt && typeof data.createdAt.toDate === "function"
-          ? data.createdAt.toDate()
-          : undefined,
-    } as Message;
+}
+
+export function getMessages$(
+  userId: string,
+  connectionId: string,
+  status?: "agendada" | "enviada"
+) {
+  return new Observable<Message[]>((subscriber) => {
+    const unsubscribe = onSnapshot(
+      query(
+        collection(db, "messages"),
+        where("userId", "==", userId),
+        where("connectionId", "==", connectionId),
+        ...(status ? [where("status", "==", status)] : []),
+        orderBy("createdAt", "desc")
+      ),
+      (snapshot) => {
+        const data = snapshot.docs.map<Message>(snapToData);
+        subscriber.next(data);
+      }
+    );
+    return () => unsubscribe();
   });
 }
 

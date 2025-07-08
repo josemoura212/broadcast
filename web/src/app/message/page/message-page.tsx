@@ -3,14 +3,14 @@ import { ConfirmDialog } from "../../components/confirm-dialog";
 import { ActionListItem } from "../../components/action-list-item";
 import { formatDateTimeLocal } from "@/core/utils/format-date-time-local";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import { useMessagePage } from "./use-message-page";
 import { MessageForm } from "../components/message-form";
 import { useState } from "react";
 import { Message } from "../message.model";
+import { MessageFilter } from "../components/message-filter";
+import { Contact } from "@/app/contact/contact.model";
 
 export function MessagePage() {
   const controller = useMessagePage();
@@ -36,33 +36,10 @@ export function MessagePage() {
         />
         {!editingMode && (
           <>
-            <Stack direction="row" spacing={2} mb={2}>
-              <Button
-                variant={controller.filter === "all" ? "contained" : "outlined"}
-                onClick={() => controller.setFilter("all")}
-              >
-                Todas
-              </Button>
-              <Button
-                variant={
-                  controller.filter === "enviada" ? "contained" : "outlined"
-                }
-                onClick={() => controller.setFilter("enviada")}
-              >
-                Enviadas
-              </Button>
-              <Button
-                variant={
-                  controller.filter === "agendada" ? "contained" : "outlined"
-                }
-                onClick={() => controller.setFilter("agendada")}
-              >
-                Agendadas
-              </Button>
-            </Stack>
-            <Typography variant="h6" mb={1}>
-              Mensagens
-            </Typography>
+            <MessageFilter
+              filter={controller.filter}
+              setFilter={controller.setFilter}
+            />
           </>
         )}
         {!editingMode &&
@@ -75,25 +52,14 @@ export function MessagePage() {
                   <ActionListItem
                     key={msg.id}
                     primary={msg.content}
-                    secondary={
-                      `Status: ${msg.status} | Para: ${controller.contacts
-                        .filter((c) => msg.contactIds.includes(c.id))
-                        .map((c) => c.name)
-                        .join(", ")} | ` +
-                      (msg.status === "agendada"
-                        ? `\nAgendada para: ${formatDateTimeLocal(
-                            msg.scheduledAt
-                          )}`
-                        : `\nEnviada em: ${formatDateTimeLocal(msg.sentAt)}`)
-                    }
+                    secondary={formatContentMessage(msg, controller.contacts)}
+                    onDelete={() => controller.setConfirmDeleteId(msg.id)}
                     {...(msg.status === "agendada"
                       ? {
                           onEdit: () => onEditMessage(msg),
                           onSendNow: () => controller.handleSendNow(msg.id),
                         }
                       : {})}
-                    onDelete={() => controller.setConfirmDeleteId(msg.id)}
-                    divider={true}
                   />
                 ))}
                 {controller.messages.length === 0 && (
@@ -117,5 +83,17 @@ export function MessagePage() {
         />
       </DefaultMenu>
     </>
+  );
+}
+
+function formatContentMessage(msg: Message, contacts: Contact[]) {
+  return (
+    `Status: ${msg.status} | Para: ${contacts
+      .filter((c) => msg.contactIds.includes(c.id))
+      .map((c) => c.name)
+      .join(", ")} | ` +
+    (msg.status === "agendada"
+      ? `Agendada para: ${formatDateTimeLocal(msg.scheduledAt)}`
+      : `Enviada em: ${formatDateTimeLocal(msg.sentAt)}`)
   );
 }

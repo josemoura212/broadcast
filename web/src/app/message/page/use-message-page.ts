@@ -1,16 +1,12 @@
-import { Contact, getContacts } from "@/app/contact/contact.model";
+import { Contact, useContact } from "@/app/contact/contact.model";
 import { useAuth } from "@/app/context/auth-context";
-import { db } from "@/core/services/firebase";
+import { useState } from "react";
 import {
-  collection,
-  CollectionReference,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
-import { useEffect, useMemo, useState } from "react";
-import { deleteMessage, Message, sendMessageNow } from "../message.model";
-import { useSnapshot } from "@/app/hooks/firestore-hooks";
+  deleteMessage,
+  Message,
+  sendMessageNow,
+  useMessages,
+} from "../message.model";
 import { useConnectionCtx } from "@/app/context/connection-context";
 
 export interface MessageController {
@@ -19,7 +15,6 @@ export interface MessageController {
     React.SetStateAction<"enviada" | "agendada" | "all">
   >;
   contacts: Contact[];
-  setContacts: React.Dispatch<React.SetStateAction<Contact[]>>;
   confirmDeleteId: string | null;
   setConfirmDeleteId: React.Dispatch<React.SetStateAction<string | null>>;
   messages: Message[];
@@ -33,40 +28,14 @@ export function useMessagePage(): MessageController {
   const { conn } = useConnectionCtx();
 
   const [filter, setFilter] = useState<"enviada" | "agendada" | "all">("all");
-  const [contacts, setContacts] = useState<Contact[]>([]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user?.uid && conn?.id) {
-      getContacts(user.uid, conn.id).then(setContacts);
-    }
-  }, [user?.uid, conn?.id]);
-
-  const refMessages = useMemo(() => {
-    const messagesRef = collection(
-      db,
-      "messages"
-    ) as CollectionReference<Message>;
-
-    if (filter !== "all") {
-      return query(
-        messagesRef,
-        where("status", "==", filter),
-        orderBy("createdAt", "desc"),
-        where("userId", "==", user?.uid),
-        where("connectionId", "==", conn?.id)
-      );
-    }
-
-    return query(
-      messagesRef,
-      orderBy("createdAt", "desc"),
-      where("userId", "==", user?.uid),
-      where("connectionId", "==", conn?.id)
-    );
-  }, [user?.uid, filter, conn?.id]);
-
-  const { state: messages, loading } = useSnapshot<Message>(refMessages);
+  const [contacts] = useContact(user?.uid || "", conn?.id || "");
+  const [messages, loading] = useMessages(
+    user?.uid || "",
+    conn?.id || "",
+    filter !== "all" ? filter : undefined
+  );
 
   async function handleSendNow(messageId: string) {
     await sendMessageNow(messageId);
@@ -82,7 +51,6 @@ export function useMessagePage(): MessageController {
     filter,
     setFilter,
     contacts,
-    setContacts,
     confirmDeleteId,
     setConfirmDeleteId,
     messages,

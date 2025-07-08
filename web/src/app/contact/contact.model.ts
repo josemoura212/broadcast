@@ -24,7 +24,10 @@ export interface Contact {
 
 export function useContact(userId: string, connectionId: string) {
   return useObservable$(
-    () => getContacts$(userId, connectionId).pipe(shareReplay(1)),
+    () =>
+      getContacts$(userId, connectionId).pipe(
+        shareReplay({ bufferSize: 1, refCount: true })
+      ),
     [userId, connectionId]
   );
 }

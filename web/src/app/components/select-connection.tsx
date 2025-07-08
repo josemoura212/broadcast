@@ -5,9 +5,9 @@ import Select from "@mui/material/Select";
 import { useAuth } from "../context/auth-context";
 import { useConnectionCtx } from "../context/connection-context";
 import { useState } from "react";
-import { useConnection } from "../connection/connection.model";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemText from "@mui/material/ListItemText";
+import { useConnections } from "../connection/connection.model";
 
 export function SelectConnection() {
   const { user } = useAuth();
@@ -16,7 +16,7 @@ export function SelectConnection() {
     conn?.id || ""
   );
 
-  const { state: connections } = useConnection(user?.uid || "");
+  const [connections] = useConnections(user?.uid || "");
 
   function handlerSelectConnection(connectionId: string) {
     const conn = connections.find((c) => c.id === connectionId);

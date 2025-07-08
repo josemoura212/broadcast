@@ -2,7 +2,7 @@ import { useAuth } from "@/app/context/auth-context";
 import {
   Connection,
   deleteConnection,
-  useConnection,
+  useConnections,
 } from "../connection.model";
 import { useState } from "react";
 
@@ -18,7 +18,7 @@ export function useConnectionPage() {
   const { user } = useAuth();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const { state: connections, loading } = useConnection(user?.uid || "");
+  const [connections, loading] = useConnections(user?.uid || "");
 
   async function handleRemoveConnection(connectionId: string) {
     if (!user) return;

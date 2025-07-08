@@ -3,15 +3,16 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDocs,
+  onSnapshot,
   orderBy,
   query,
   updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../../core/services/firebase";
-import { useMemo } from "react";
-import { useSnapshot } from "../hooks/firestore-hooks";
+import { Observable, shareReplay } from "rxjs";
+import { snapToData } from "@/core/utils/firebase";
+import { useObservable$ } from "../hooks/firestore-hooks";
 
 export interface Connection {
   id: string;
@@ -19,27 +20,32 @@ export interface Connection {
   name: string;
 }
 
-export function useConnection(userId: string) {
-  const ref = useMemo(
+export function useConnections(userId: string) {
+  return useObservable$(
     () =>
-      query(
-        collection(db, `connections`),
-        where("userId", "==", userId),
-        orderBy("name")
+      getConnections$(userId).pipe(
+        shareReplay({ bufferSize: 1, refCount: true })
       ),
     [userId]
   );
-
-  return useSnapshot<Connection>(ref);
 }
 
-export async function getConnections(userId: string): Promise<Connection[]> {
-  const snapshot = await getDocs(
-    query(collection(db, `connections`), where("userId", "==", userId))
-  );
-  return snapshot.docs.map(
-    (doc) => ({ id: doc.id, ...doc.data() } as Connection)
-  );
+export function getConnections$(userId: string) {
+  return new Observable<Connection[]>((subscriber) => {
+    const unsubscribe = onSnapshot(
+      query(
+        collection(db, "connections"),
+        where("userId", "==", userId),
+        orderBy("name")
+      ),
+      (snapshot) => {
+        const connections = snapshot.docs.map<Connection>(snapToData);
+        subscriber.next(connections);
+      }
+    );
+
+    return () => unsubscribe();
+  });
 }
 
 export async function addConnection(

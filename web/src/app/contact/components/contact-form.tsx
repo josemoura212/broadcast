@@ -22,7 +22,7 @@ export function ContactForm(props: ContactFormProps) {
 
   const { conn } = useConnectionCtx();
   const { user } = useAuth();
-  const { control, handleSubmit, reset } = useForm<ContactFormData>();
+  const { control, handleSubmit, reset, setError } = useForm<ContactFormData>();
 
   useEffect(() => {
     if (!editingMode) {
@@ -32,31 +32,33 @@ export function ContactForm(props: ContactFormProps) {
     reset({ name: contact?.name || "", phone: contact?.phone || "" });
   }, [editingMode]);
 
-  async function onSubmit(data: ContactFormData) {
-    if (!user || !data.name.trim() || !data.phone.trim() || !conn) {
-      return;
-    }
-
-    if (editingMode) {
-      if (!contact) return;
-      await updateContact(contact.id, {
-        name: data.name.trim(),
-        phone: data.phone.trim(),
-      });
-      setEditingMode(false);
-    } else {
-      await addContact({
-        connectionId: conn?.id,
-        userId: user.uid,
-        name: data.name.trim(),
-        phone: data.phone.trim(),
-      });
-    }
-  }
-
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(async (data) => {
+        if (!user || !data.name.trim() || !data.phone.trim() || !conn) {
+          return;
+        }
+
+        try {
+          if (editingMode) {
+            if (!contact) return;
+            await updateContact(contact.id, {
+              name: data.name.trim(),
+              phone: data.phone.trim(),
+            });
+            setEditingMode(false);
+          } else {
+            await addContact({
+              connectionId: conn?.id,
+              userId: user.uid,
+              name: data.name.trim(),
+              phone: data.phone.trim(),
+            });
+          }
+        } catch (error) {
+          setError("name", { message: "Erro ao salvar contato" });
+        }
+      })}
       className="flex gap-3 mb-3 items-start flex-col"
     >
       <ControlledTextField<ContactFormData>

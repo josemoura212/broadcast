@@ -27,38 +27,30 @@ export function ConnectionForm(props: ConnectionFormProps) {
     useForm<ConnectionFormData>();
 
   useEffect(() => {
-    if (editingMode && connection) {
-      reset({ name: connection.name });
-    } else {
+    if (!editingMode) {
       reset({ name: "" });
+      return;
     }
-  }, [editingMode, connection, reset]);
-
-  async function onSubmit(data: ConnectionFormData) {
-    if (!user) return;
-
-    try {
-      if (editingMode) {
-        if (!connection) return;
-        await updateConnection(connection.id, data.name.trim());
-        setEditingMode(false);
-      } else {
-        await addConnection(user.uid, data.name.trim());
-      }
-      reset({ name: "" });
-    } catch (error) {
-      setError("name", { message: "Erro ao salvar conexão" });
-    }
-  }
-
-  const handleCancel = () => {
-    setEditingMode(false);
-    reset({ name: "" });
-  };
+    reset({ name: connection?.name || "" });
+  }, [editingMode]);
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(async (data) => {
+        if (!user) return;
+
+        try {
+          if (editingMode) {
+            if (!connection) return;
+            await updateConnection(connection.id, data.name.trim());
+            setEditingMode(false);
+          } else {
+            await addConnection(user.uid, data.name.trim());
+          }
+        } catch (error) {
+          setError("name", { message: "Erro ao salvar conexão" });
+        }
+      })}
       className="flex gap-3 mb-3 items-start"
     >
       <ControlledTextField
@@ -72,7 +64,11 @@ export function ConnectionForm(props: ConnectionFormProps) {
         {editingMode ? "Salvar" : "Adicionar"}
       </Button>
       {editingMode && (
-        <Button variant="contained" color="error" onClick={handleCancel}>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => setEditingMode(false)}
+        >
           Cancelar
         </Button>
       )}

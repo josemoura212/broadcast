@@ -10,7 +10,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db } from "../../infra/services/firebase";
+import { db } from "../../core/services/firebase";
 
 export interface Message {
   id: string;

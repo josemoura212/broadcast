@@ -17,10 +17,7 @@ export function useContactPage() {
 
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const { state: contacts, loading } = useContact(
-    user?.uid || "",
-    conn?.id || ""
-  );
+  const [contacts, loading] = useContact(user?.uid || "", conn?.id || "");
 
   async function handleRemoveContact(contactId: string) {
     if (!user) return;

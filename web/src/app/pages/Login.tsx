@@ -3,7 +3,7 @@ import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { FormsBox } from "../components/froms-box";
 import { ControlledTextField } from "../components/controlled-text-field";
-import { auth, googleAuthProvider } from "../../infra/services/firebase";
+import { auth, googleAuthProvider } from "../../core/services/firebase";
 import { Google } from "@mui/icons-material";
 import Button from "@mui/material/Button";
 

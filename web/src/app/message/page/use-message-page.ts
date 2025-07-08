@@ -1,6 +1,6 @@
 import { Contact, getContacts } from "@/app/contact/contact.model";
 import { useAuth } from "@/app/context/auth-context";
-import { db } from "@/infra/services/firebase";
+import { db } from "@/core/services/firebase";
 import {
   collection,
   CollectionReference,

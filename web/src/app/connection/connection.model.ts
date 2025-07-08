@@ -9,7 +9,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../../infra/services/firebase";
+import { db } from "../../core/services/firebase";
 import { useMemo } from "react";
 import { useSnapshot } from "../hooks/firestore-hooks";
 

@@ -1,7 +1,7 @@
 import { DefaultMenu } from "../../components/default-menu";
 import { ConfirmDialog } from "../../components/confirm-dialog";
 import { ActionListItem } from "../../components/action-list-item";
-import { formatDateTimeLocal } from "@/infra/utils/format-date-time-local";
+import { formatDateTimeLocal } from "@/core/utils/format-date-time-local";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";

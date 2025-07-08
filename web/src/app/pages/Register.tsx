@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../infra/services/firebase";
+import { auth } from "../../core/services/firebase";
 import { useNavigate } from "react-router-dom";
 import { FormsBox } from "../components/froms-box";
 import { ControlledTextField } from "../components/controlled-text-field";

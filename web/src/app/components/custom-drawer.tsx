@@ -14,7 +14,7 @@ import Divider from "@mui/material/Divider";
 import { DrawerItem } from "./drawer-item";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth } from "@/infra/services/firebase";
+import { auth } from "@/core/services/firebase";
 import { SelectConnection } from "./select-connection";
 import { useConnectionCtx } from "../context/connection-context";
 

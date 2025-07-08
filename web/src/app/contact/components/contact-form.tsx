@@ -2,7 +2,7 @@ import Button from "@mui/material/Button";
 import { useAuth } from "@/app/context/auth-context";
 import { useEffect } from "react";
 import { addContact, Contact, updateContact } from "../contact.model";
-import { useConnection } from "@/app/context/connection-context";
+import { useConnectionCtx } from "@/app/context/connection-context";
 import { useForm } from "react-hook-form";
 import { ControlledTextField } from "@/app/components/controlled-text-field";
 
@@ -20,7 +20,7 @@ interface ContactFormData {
 export function ContactForm(props: ContactFormProps) {
   const { contact, editingMode, setEditingMode } = props;
 
-  const { conn } = useConnection();
+  const { conn } = useConnectionCtx();
   const { user } = useAuth();
   const { control, handleSubmit, reset } = useForm<ContactFormData>();
 

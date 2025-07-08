@@ -16,7 +16,7 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "@/infra/services/firebase";
 import { SelectConnection } from "./select-connection";
-import { useConnection } from "../context/connection-context";
+import { useConnectionCtx } from "../context/connection-context";
 
 interface CustomDrawerProps {
   onPinnedChange?: (isPinned: boolean) => void;
@@ -25,7 +25,7 @@ interface CustomDrawerProps {
 const DRAWER_KEY = "drawerPinned";
 
 export function CustomDrawer({ onPinnedChange }: CustomDrawerProps) {
-  const { conn } = useConnection();
+  const { conn } = useConnectionCtx();
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPinned, setIsPinned] = useState(

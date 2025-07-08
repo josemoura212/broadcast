@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { DefaultMenu } from "../components/default-menu";
 import { useAuth } from "../context/auth-context";
-import { useConnection } from "../context/connection-context";
+import { useConnectionCtx } from "../context/connection-context";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -11,7 +11,7 @@ import { SelectConnection } from "../components/select-connection";
 export function Home() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { conn } = useConnection();
+  const { conn } = useConnectionCtx();
 
   return (
     <DefaultMenu>

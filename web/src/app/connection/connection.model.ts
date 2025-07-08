@@ -4,16 +4,33 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  orderBy,
   query,
   updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../../infra/services/firebase";
+import { useMemo } from "react";
+import { useSnapshot } from "../hooks/firestore-hooks";
 
 export interface Connection {
   id: string;
   userId: string;
   name: string;
+}
+
+export function useConnection(userId: string) {
+  const ref = useMemo(
+    () =>
+      query(
+        collection(db, `connections`),
+        where("userId", "==", userId),
+        orderBy("name")
+      ),
+    [userId]
+  );
+
+  return useSnapshot<Connection>(ref);
 }
 
 export async function getConnections(userId: string): Promise<Connection[]> {

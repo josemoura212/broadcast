@@ -11,7 +11,7 @@ const ConnectionContext = createContext<ConnectionContextType>({
   setConn: () => {},
 });
 
-export const useConnection = () => useContext(ConnectionContext);
+export const useConnectionCtx = () => useContext(ConnectionContext);
 
 const CONN_KEY = "selectedConnection";
 

@@ -1,7 +1,7 @@
 import { useAuth } from "@/app/context/auth-context";
 import { useState } from "react";
 import { Contact, deleteContact, useContact } from "../contact.model";
-import { useConnection } from "@/app/context/connection-context";
+import { useConnectionCtx } from "@/app/context/connection-context";
 
 export interface ContactController {
   confirmDeleteId: string | null;
@@ -13,7 +13,7 @@ export interface ContactController {
 
 export function useContactPage() {
   const { user } = useAuth();
-  const { conn } = useConnection();
+  const { conn } = useConnectionCtx();
 
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 

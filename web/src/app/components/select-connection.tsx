@@ -3,31 +3,27 @@ import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
 import { useAuth } from "../context/auth-context";
-import { useConnection } from "../context/connection-context";
+import { useConnectionCtx } from "../context/connection-context";
 import { useEffect, useState } from "react";
-import { Connection } from "../connection/connection.model";
+import { Connection, useConnection } from "../connection/connection.model";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemText from "@mui/material/ListItemText";
-import { useConnectionPage } from "../connection/page/use-connection-page";
 
 export function SelectConnection() {
   const { user } = useAuth();
-  const { conn, setConn } = useConnection();
+  const { conn, setConn } = useConnectionCtx();
   const [connections, setConnections] = useState<Connection[]>([]);
-  const [selectedConnection, setSelectedConnection] = useState<string>("");
+  const [selectedConnection, setSelectedConnection] = useState<string>(
+    conn?.id || ""
+  );
 
-  const controllerConnection = useConnectionPage();
+  const { state: connectionsList } = useConnection(user?.uid || "");
 
   useEffect(() => {
     if (user?.uid) {
-      setConnections(controllerConnection.connections);
+      setConnections(connectionsList);
     }
-  }, [controllerConnection.connections]);
-
-  useEffect(() => {
-    if (!conn) return;
-    setSelectedConnection(conn.id);
-  }, [conn]);
+  }, [connectionsList]);
 
   function handlerSelectConnection(connectionId: string) {
     const conn = connections.find((c) => c.id === connectionId);

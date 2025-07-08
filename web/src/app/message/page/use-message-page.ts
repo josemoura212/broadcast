@@ -11,7 +11,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { deleteMessage, Message, sendMessageNow } from "../message.model";
 import { useSnapshot } from "@/app/hooks/firestore-hooks";
-import { useConnection } from "@/app/context/connection-context";
+import { useConnectionCtx } from "@/app/context/connection-context";
 
 export interface MessageController {
   filter: "enviada" | "agendada" | "all";
@@ -30,7 +30,7 @@ export interface MessageController {
 
 export function useMessagePage(): MessageController {
   const { user } = useAuth();
-  const { conn } = useConnection();
+  const { conn } = useConnectionCtx();
 
   const [filter, setFilter] = useState<"enviada" | "agendada" | "all">("all");
   const [contacts, setContacts] = useState<Contact[]>([]);

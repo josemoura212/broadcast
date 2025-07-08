@@ -1,15 +1,10 @@
 import { useAuth } from "@/app/context/auth-context";
-import { Connection, deleteConnection } from "../connection.model";
-import { useMemo, useState } from "react";
 import {
-  collection,
-  CollectionReference,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "@/infra/services/firebase";
-import { useSnapshot } from "@/app/hooks/firestore-hooks";
+  Connection,
+  deleteConnection,
+  useConnection,
+} from "../connection.model";
+import { useState } from "react";
 
 export interface ConnectionController {
   confirmDeleteId: string | null;
@@ -23,16 +18,7 @@ export function useConnectionPage() {
   const { user } = useAuth();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const ref = useMemo(
-    () =>
-      query(
-        collection(db, `connections`) as CollectionReference<Connection>,
-        orderBy("name"),
-        where("userId", "==", user?.uid)
-      ),
-    [user?.uid]
-  );
-  const { state: connections, loading } = useSnapshot<Connection>(ref);
+  const { state: connections, loading } = useConnection(user?.uid || "");
 
   async function handleRemoveConnection(connectionId: string) {
     if (!user) return;

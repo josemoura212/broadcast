@@ -12,7 +12,7 @@ import { useAuth } from "@/app/context/auth-context";
 import { useEffect } from "react";
 import { addMessage, Message, updateMessage } from "../message.model";
 import { toDate } from "@/infra/utils/to-date";
-import { useConnection } from "@/app/context/connection-context";
+import { useConnectionCtx } from "@/app/context/connection-context";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { ControlledTextField } from "@/app/components/controlled-text-field";
 
@@ -33,7 +33,7 @@ export function MessageForm(props: MessageFormProps) {
 
   const controller = useMessagePage();
   const { user } = useAuth();
-  const { conn } = useConnection();
+  const { conn } = useConnectionCtx();
   const contacts = controller.contacts;
 
   const { control, handleSubmit, reset, setValue } = useForm<MessageFormData>({

@@ -33,7 +33,7 @@ export function useMessages(
   connectionId: string,
   status?: "agendada" | "enviada"
 ) {
-  return useObservable$<Message>(
+  return useObservable$(
     () =>
       getMessages$(userId, connectionId, status).pipe(
         shareReplay({ bufferSize: 1, refCount: true })

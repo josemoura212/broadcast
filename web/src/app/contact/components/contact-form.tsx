@@ -22,23 +22,15 @@ export function ContactForm(props: ContactFormProps) {
 
   const { conn } = useConnection();
   const { user } = useAuth();
-
-  const { control, handleSubmit, reset, setValue } = useForm<ContactFormData>({
-    defaultValues: {
-      name: "",
-      phone: "",
-    },
-  });
+  const { control, handleSubmit, reset } = useForm<ContactFormData>();
 
   useEffect(() => {
-    if (editingMode && contact) {
-      setValue("name", contact.name);
-      setValue("phone", contact.phone);
-    }
     if (!editingMode) {
-      reset();
+      reset({ name: "", phone: "" });
+      return;
     }
-  }, [editingMode, contact, setValue, reset]);
+    reset({ name: contact?.name || "", phone: contact?.phone || "" });
+  }, [editingMode]);
 
   async function onSubmit(data: ContactFormData) {
     if (!user || !data.name.trim() || !data.phone.trim() || !conn) {
@@ -52,17 +44,14 @@ export function ContactForm(props: ContactFormProps) {
         phone: data.phone.trim(),
       });
       setEditingMode(false);
-      reset();
-      return;
+    } else {
+      await addContact({
+        connectionId: conn?.id,
+        userId: user.uid,
+        name: data.name.trim(),
+        phone: data.phone.trim(),
+      });
     }
-
-    await addContact({
-      connectionId: conn?.id,
-      userId: user.uid,
-      name: data.name.trim(),
-      phone: data.phone.trim(),
-    });
-    reset();
   }
 
   return (

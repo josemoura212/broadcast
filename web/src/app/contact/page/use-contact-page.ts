@@ -1,15 +1,6 @@
 import { useAuth } from "@/app/context/auth-context";
-import { db } from "@/infra/services/firebase";
-import {
-  collection,
-  CollectionReference,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
-import { useMemo, useState } from "react";
-import { Contact, deleteContact } from "../contact.model";
-import { useSnapshot } from "@/app/hooks/firestore-hooks";
+import { useState } from "react";
+import { Contact, deleteContact, useContact } from "../contact.model";
 import { useConnection } from "@/app/context/connection-context";
 
 export interface ContactController {
@@ -26,18 +17,10 @@ export function useContactPage() {
 
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const ref = useMemo(
-    () =>
-      query(
-        collection(db, "contacts") as CollectionReference<Contact>,
-        orderBy("name"),
-        where("userId", "==", user?.uid),
-        where("connectionId", "==", conn?.id)
-      ),
-    [user?.uid, conn?.id]
+  const { state: contacts, loading } = useContact(
+    user?.uid || "",
+    conn?.id || ""
   );
-
-  const { state: contacts, loading } = useSnapshot<Contact>(ref);
 
   async function handleRemoveContact(contactId: string) {
     if (!user) return;

@@ -7,7 +7,7 @@ import {
 import { useEffect, useState } from "react";
 
 export function useSnapshot<T extends { id: string }>(
-  ref: CollectionReference<T> | Query<T, DocumentData>
+  ref: CollectionReference<T> | Query<T | DocumentData, DocumentData>
 ) {
   const [state, setState] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);

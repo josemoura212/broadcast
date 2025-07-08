@@ -7,8 +7,11 @@ import {
   updateDoc,
   query,
   where,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../../infra/services/firebase";
+import { useSnapshot } from "../hooks/firestore-hooks";
+import { useMemo } from "react";
 
 export interface Contact {
   id: string;
@@ -16,6 +19,19 @@ export interface Contact {
   userId: string;
   name: string;
   phone: string;
+}
+
+export function useContact(userId: string, connectionId: string) {
+  const ref = useMemo(() => {
+    return query(
+      collection(db, "contacts"),
+      where("userId", "==", userId),
+      where("connectionId", "==", connectionId),
+      orderBy("name")
+    );
+  }, [userId, connectionId]);
+
+  return useSnapshot<Contact>(ref);
 }
 
 export async function getContacts(

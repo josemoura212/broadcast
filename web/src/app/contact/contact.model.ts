@@ -7,12 +7,11 @@ import {
   query,
   where,
   orderBy,
-  onSnapshot,
 } from "firebase/firestore";
 import { db } from "@/core/services/firebase";
 import { useObservable$ } from "../hooks/firestore-hooks";
 import { Observable, shareReplay } from "rxjs";
-import { snapToData } from "@/core/utils/firebase";
+import { collectionData } from "rxfire/firestore";
 
 export interface Contact {
   id: string;
@@ -34,19 +33,15 @@ export function useContact(userId: string, connectionId: string) {
 
 export function getContacts$(userId: string, connectionId: string) {
   return new Observable<Contact[]>((subscriber) => {
-    const unsubscribe = onSnapshot(
+    collectionData(
       query(
         collection(db, "contacts"),
         where("userId", "==", userId),
         where("connectionId", "==", connectionId),
         orderBy("name")
       ),
-      (snapshot) => {
-        const data = snapshot.docs.map<Contact>(snapToData);
-        subscriber.next(data);
-      }
-    );
-    return () => unsubscribe();
+      { idField: "id" }
+    ).subscribe((data) => subscriber.next(data as Contact[]));
   });
 }
 

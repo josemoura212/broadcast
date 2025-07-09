@@ -8,13 +8,12 @@ import {
   getDoc,
   query,
   where,
-  onSnapshot,
   orderBy,
 } from "firebase/firestore";
 import { db } from "../../core/services/firebase";
 import { Observable, shareReplay } from "rxjs";
-import { snapToData } from "@/core/utils/firebase";
 import { useObservable$ } from "../hooks/firestore-hooks";
+import { collectionData } from "rxfire/firestore";
 
 export interface Message {
   id: string;
@@ -48,7 +47,7 @@ export function getMessages$(
   status?: "agendada" | "enviada"
 ) {
   return new Observable<Message[]>((subscriber) => {
-    const unsubscribe = onSnapshot(
+    collectionData(
       query(
         collection(db, "messages"),
         where("userId", "==", userId),
@@ -56,12 +55,8 @@ export function getMessages$(
         ...(status ? [where("status", "==", status)] : []),
         orderBy("createdAt", "desc")
       ),
-      (snapshot) => {
-        const data = snapshot.docs.map<Message>(snapToData);
-        subscriber.next(data);
-      }
-    );
-    return () => unsubscribe();
+      { idField: "id" }
+    ).subscribe((data) => subscriber.next(data as Message[]));
   });
 }
 

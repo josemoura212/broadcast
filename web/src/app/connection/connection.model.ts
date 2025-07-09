@@ -3,7 +3,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  onSnapshot,
   orderBy,
   query,
   updateDoc,
@@ -11,8 +10,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../../core/services/firebase";
 import { Observable, shareReplay } from "rxjs";
-import { snapToData } from "@/core/utils/firebase";
 import { useObservable$ } from "../hooks/firestore-hooks";
+import { collectionData } from "rxfire/firestore";
 
 export interface Connection {
   id: string;
@@ -32,19 +31,14 @@ export function useConnections(userId: string) {
 
 export function getConnections$(userId: string) {
   return new Observable<Connection[]>((subscriber) => {
-    const unsubscribe = onSnapshot(
+    collectionData(
       query(
         collection(db, "connections"),
         where("userId", "==", userId),
         orderBy("name")
       ),
-      (snapshot) => {
-        const connections = snapshot.docs.map<Connection>(snapToData);
-        subscriber.next(connections);
-      }
-    );
-
-    return () => unsubscribe();
+      { idField: "id" }
+    ).subscribe((data) => subscriber.next(data as Connection[]));
   });
 }
 

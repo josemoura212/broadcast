@@ -29,7 +29,7 @@ export function CustomDrawer({ onPinnedChange }: CustomDrawerProps) {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPinned, setIsPinned] = useState(
-    JSON.parse(localStorage.getItem(DRAWER_KEY) ?? "false")
+    JSON.parse(localStorage.getItem(DRAWER_KEY) ?? "true")
   );
   const navigate = useNavigate();
 

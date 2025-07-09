@@ -1,52 +1,38 @@
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import Select from "@mui/material/Select";
 import { useAuth } from "../context/auth-context";
 import { useConnectionCtx } from "../context/connection-context";
-import { useState } from "react";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemText from "@mui/material/ListItemText";
 import { useConnections } from "../connection/connection.model";
+import { useForm } from "react-hook-form";
+import { ControlledSelect } from "./controlled-select";
+import { useEffect } from "react";
 
 export function SelectConnection() {
   const { user } = useAuth();
   const { conn, setConn } = useConnectionCtx();
-  const [selectedConnection, setSelectedConnection] = useState<string>(
-    conn?.id || ""
-  );
-
   const [connections] = useConnections(user?.uid || "");
+  const { control, watch } = useForm({
+    defaultValues: {
+      connectionId: conn?.id || "",
+    },
+  });
 
-  function handlerSelectConnection(connectionId: string) {
-    const conn = connections.find((c) => c.id === connectionId);
-    if (!conn) return;
-    setConn(conn);
-    setSelectedConnection(connectionId);
-  }
+  const watchedConnectionId = watch("connectionId");
+
+  useEffect(() => {
+    if (watchedConnectionId) {
+      const connection = connections.find((c) => c.id === watchedConnectionId);
+      if (connection) {
+        setConn(connection);
+      }
+    }
+  }, [watchedConnectionId]);
 
   return (
-    <FormControl fullWidth sx={{ mt: 3 }} variant="outlined">
-      <InputLabel>Conexões</InputLabel>
-      <Select
-        required
-        value={
-          connections.some((c) => c.id === selectedConnection)
-            ? selectedConnection
-            : ""
-        }
-        onChange={(e) => handlerSelectConnection(e.target.value as string)}
-        input={<OutlinedInput label="Conexões" />}
-        renderValue={(selected) =>
-          connections.find((c) => c.id === selected)?.name || ""
-        }
-      >
-        {connections.map((connection) => (
-          <MenuItem key={connection.id} value={connection.id}>
-            <ListItemText primary={connection.name} />
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <ControlledSelect
+      name="connectionId"
+      control={control}
+      rules={{ required: "Selecione uma conexão" }}
+      label="Conexões"
+      options={connections}
+    />
   );
 }

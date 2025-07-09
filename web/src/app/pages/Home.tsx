@@ -6,7 +6,6 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { SelectConnection } from "../components/select-connection";
 
 export function Home() {
   const navigate = useNavigate();
@@ -29,7 +28,7 @@ export function Home() {
             uma conexão para começar.
           </Typography>
         )}
-        <SelectConnection />
+        {/* <SelectConnection /> */}
         <Stack spacing={2} mt={3}>
           <Button
             variant="contained"

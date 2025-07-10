@@ -20,45 +20,43 @@ export function ContactPage() {
   const [contacts, loading] = useContacts(user?.uid || "", conn?.id || "");
 
   return (
-    <>
-      <DefaultMenu>
-        <Typography variant="h4" mb={2} textAlign={"center"}>
-          Contatos
-        </Typography>
-        <Box display="flex" justifyContent="flex-end" mb={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => openCreateContactDialog()}
-          >
-            Criar Contato
-          </Button>
+    <DefaultMenu>
+      <Typography variant="h4" mb={2} textAlign={"center"}>
+        Contatos
+      </Typography>
+      <Box display="flex" justifyContent="flex-end" mb={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => openCreateContactDialog()}
+        >
+          Criar Contato
+        </Button>
+      </Box>
+      <Divider />
+      {loading ? (
+        <Typography>Carregando...</Typography>
+      ) : (
+        <Box sx={{ maxHeight: "60vh", overflowY: "auto" }}>
+          <List>
+            {contacts.map((contact) => (
+              <ActionListItem
+                key={contact.id}
+                primary={contact.name}
+                secondary={contact.phone}
+                onEdit={() => openCreateContactDialog(contact)}
+                onDelete={() => openDeleteContactDialog(contact.id)}
+                divider={true}
+              />
+            ))}
+            {contacts.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                Nenhum contato cadastrado.
+              </Typography>
+            )}
+          </List>
         </Box>
-        <Divider />
-        {loading ? (
-          <Typography>Carregando...</Typography>
-        ) : (
-          <Box sx={{ maxHeight: "60vh", overflowY: "auto" }}>
-            <List>
-              {contacts.map((contact) => (
-                <ActionListItem
-                  key={contact.id}
-                  primary={contact.name}
-                  secondary={contact.phone}
-                  onEdit={() => openCreateContactDialog(contact)}
-                  onDelete={() => openDeleteContactDialog(contact.id)}
-                  divider={true}
-                />
-              ))}
-              {contacts.length === 0 && (
-                <Typography variant="body2" color="text.secondary">
-                  Nenhum contato cadastrado.
-                </Typography>
-              )}
-            </List>
-          </Box>
-        )}
-      </DefaultMenu>
-    </>
+      )}
+    </DefaultMenu>
   );
 }

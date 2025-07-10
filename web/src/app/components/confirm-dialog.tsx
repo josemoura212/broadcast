@@ -1,54 +1,49 @@
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
 interface ConfirmDialogProps {
-  open: boolean;
   title?: string;
   message: string;
+  onClickConfirm: () => void;
   onClose: () => void;
-  onConfirm: () => void;
-  confirmText?: string;
-  cancelText?: string;
-  confirmColor?:
-    | "primary"
-    | "error"
-    | "inherit"
-    | "secondary"
-    | "success"
-    | "info"
-    | "warning";
+  confirmColor?: "error" | "primary" | "secondary" | "inherit";
 }
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
   const {
-    open,
-    title = "Confirmar ação",
     message,
+    onClickConfirm,
     onClose,
-    onConfirm,
-    confirmText = "Confirmar",
-    cancelText = "Cancelar",
+    title = "Confirmar exclusão",
     confirmColor = "error",
   } = props;
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{title}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>{message}</DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="inherit">
-          {cancelText}
-        </Button>
-        <Button onClick={onConfirm} color={confirmColor} variant="contained">
-          {confirmText}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <Paper
+      elevation={2}
+      sx={{
+        padding: 3,
+        minWidth: "300px",
+      }}
+    >
+      <Box display="flex" flexDirection="column" gap={2}>
+        <Typography variant="h6">{title}</Typography>
+        <Typography>{message}</Typography>
+        <Box display="flex" justifyContent="flex-end" gap={2}>
+          <Button color="inherit" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color={confirmColor}
+            onClick={onClickConfirm}
+          >
+            Remover
+          </Button>
+        </Box>
+      </Box>
+    </Paper>
   );
 }

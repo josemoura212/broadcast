@@ -1,88 +1,79 @@
 import { DefaultMenu } from "@/app/components/default-menu";
-import { ConfirmDialog } from "@/app/components/confirm-dialog";
 import { ActionListItem } from "@/app/components/action-list-item";
-import { formatDateTimeLocal } from "@/core/utils/format-date-time-local";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
-import { useMessagePage } from "./use-message-page";
-import { MessageForm } from "./message-form";
 import { useState } from "react";
-import { Message } from "../message.model";
+import { Message, sendMessageNow, useMessages } from "../message.model";
 import { MessageFilter } from "./message-filter";
-import { Contact } from "@/app/apps/contacts/contact.model";
+import { Contact, useContacts } from "@/app/apps/contacts/contact.model";
+import { useAuth } from "@/app/context/auth-context";
+import { useConnectionCtx } from "@/app/context/connection-context";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import {
+  openAddEditMessageDialog,
+  openDeleteMessageDialog,
+} from "./message.facade";
+import { formatDateTimeLocal } from "@/core/utils/date-time";
 
 export function MessagePage() {
-  const controller = useMessagePage();
+  const { user } = useAuth();
+  const { conn } = useConnectionCtx();
 
-  const [editingMode, setEditingMode] = useState(false);
-  const [editingMessage, setEditingMessage] = useState<Message | null>(null);
-
-  function onEditMessage(msg: Message) {
-    setEditingMode(true);
-    setEditingMessage(msg);
-  }
+  const [filter, setFilter] = useState<"enviada" | "agendada" | "all">("all");
+  const [contacts] = useContacts(user?.uid || "", conn?.id || "");
+  const [messages, loading] = useMessages(
+    user?.uid || "",
+    conn?.id || "",
+    filter !== "all" ? filter : undefined
+  );
 
   return (
-    <>
-      <DefaultMenu>
-        <Typography variant="h6" mb={2}>
-          Enviar Mensagem
-        </Typography>
-        <MessageForm
-          editingMode={editingMode}
-          setEditingMode={setEditingMode}
-          message={editingMessage}
-        />
-        {!editingMode && (
-          <>
-            <MessageFilter
-              filter={controller.filter}
-              setFilter={controller.setFilter}
-            />
-          </>
-        )}
-        {!editingMode &&
-          (controller.loading ? (
-            <Typography>Carregando...</Typography>
-          ) : (
-            <Box sx={{ overflowY: "auto" }}>
-              <List>
-                {controller.messages.map((msg) => (
-                  <ActionListItem
-                    key={msg.id}
-                    primary={msg.content}
-                    secondary={formatContentMessage(msg, controller.contacts)}
-                    onDelete={() => controller.setConfirmDeleteId(msg.id)}
-                    {...(msg.status === "agendada"
-                      ? {
-                          onEdit: () => onEditMessage(msg),
-                          onSendNow: () => controller.handleSendNow(msg.id),
-                        }
-                      : {})}
-                  />
-                ))}
-                {controller.messages.length === 0 && (
-                  <Typography variant="body2" color="text.secondary">
-                    Nenhuma mensagem encontrada.
-                  </Typography>
-                )}
-              </List>
-            </Box>
-          ))}
-        <ConfirmDialog
-          open={!!controller.confirmDeleteId}
-          title="Confirmar remoção"
-          message="Tem certeza que deseja remover esta mensagem? Essa ação não pode ser desfeita."
-          onClose={() => controller.setConfirmDeleteId(null)}
-          onConfirm={() =>
-            controller.handleRemoveMessage(controller.confirmDeleteId!)
-          }
-          confirmText="Remover"
-          confirmColor="error"
-        />
-      </DefaultMenu>
-    </>
+    <DefaultMenu>
+      <Typography variant="h4" mb={2} textAlign={"center"}>
+        Mensagens
+      </Typography>
+      <Box display="flex" justifyContent="flex-end" mb={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="medium"
+          onClick={() => openAddEditMessageDialog()}
+        >
+          Criar Mensagem
+        </Button>
+      </Box>
+      <Divider />
+      <MessageFilter filter={filter} setFilter={setFilter} />
+      {loading ? (
+        <Typography>Carregando...</Typography>
+      ) : (
+        <Box sx={{ overflowY: "auto" }}>
+          <List>
+            {messages.map((msg) => (
+              <ActionListItem
+                key={msg.id}
+                primary={msg.content}
+                secondary={formatContentMessage(msg, contacts)}
+                onDelete={() => openDeleteMessageDialog(msg.id)}
+                {...(msg.status === "agendada"
+                  ? {
+                      onEdit: () => openAddEditMessageDialog(msg),
+                      onSendNow: () => sendMessageNow(msg.id),
+                    }
+                  : {})}
+              />
+            ))}
+            {messages.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                Nenhuma mensagem encontrada.
+              </Typography>
+            )}
+          </List>
+        </Box>
+      )}
+    </DefaultMenu>
   );
 }
 

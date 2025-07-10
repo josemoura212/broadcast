@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Connection } from "../connection/connection.model";
+import { Connection } from "../apps/connections/connection.model";
 
 interface ConnectionContextType {
   conn: Connection | null;

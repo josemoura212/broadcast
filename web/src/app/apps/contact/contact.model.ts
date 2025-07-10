@@ -9,7 +9,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { db } from "@/core/services/firebase";
-import { useObservable$ } from "../hooks/firestore-hooks";
+import { useObservable$ } from "@/app/hooks/firestore-hooks";
 import { Observable, shareReplay } from "rxjs";
 import { collectionData } from "rxfire/firestore";
 

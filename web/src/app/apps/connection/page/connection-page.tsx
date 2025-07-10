@@ -1,6 +1,6 @@
-import { ConfirmDialog } from "../../components/confirm-dialog";
-import { DefaultMenu } from "../../components/default-menu";
-import { ActionListItem } from "../../components/action-list-item";
+import { ConfirmDialog } from "@/app/components/confirm-dialog";
+import { DefaultMenu } from "@/app/components/default-menu";
+import { ActionListItem } from "@/app/components/action-list-item";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";

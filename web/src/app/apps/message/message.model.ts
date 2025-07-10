@@ -10,9 +10,9 @@ import {
   where,
   orderBy,
 } from "firebase/firestore";
-import { db } from "../../core/services/firebase";
+import { db } from "@/core/services/firebase";
 import { Observable, shareReplay } from "rxjs";
-import { useObservable$ } from "../hooks/firestore-hooks";
+import { useObservable$ } from "../../hooks/firestore-hooks";
 import { collectionData } from "rxfire/firestore";
 
 export interface Message {

@@ -1,6 +1,6 @@
-import { DefaultMenu } from "../../components/default-menu";
-import { ConfirmDialog } from "../../components/confirm-dialog";
-import { ActionListItem } from "../../components/action-list-item";
+import { DefaultMenu } from "@/app/components/default-menu";
+import { ConfirmDialog } from "@/app/components/confirm-dialog";
+import { ActionListItem } from "@/app/components/action-list-item";
 import { formatDateTimeLocal } from "@/core/utils/format-date-time-local";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -10,7 +10,7 @@ import { MessageForm } from "../components/message-form";
 import { useState } from "react";
 import { Message } from "../message.model";
 import { MessageFilter } from "../components/message-filter";
-import { Contact } from "@/app/contact/contact.model";
+import { Contact } from "@/app/apps/contact/contact.model";
 
 export function MessagePage() {
   const controller = useMessagePage();

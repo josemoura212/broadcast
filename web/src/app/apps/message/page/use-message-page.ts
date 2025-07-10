@@ -1,4 +1,4 @@
-import { Contact, useContact } from "@/app/contact/contact.model";
+import { Contact, useContact } from "@/app/apps/contact/contact.model";
 import { useAuth } from "@/app/context/auth-context";
 import { useState } from "react";
 import {

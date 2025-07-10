@@ -1,13 +1,14 @@
 import { DefaultMenu } from "@/app/components/default-menu";
-import { ConfirmDialog } from "@/app/components/confirm-dialog";
 import { ActionListItem } from "@/app/components/action-list-item";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
-import { useState } from "react";
-import { deleteContact, useContactc } from "../contact.model";
+import { useContactc } from "../contact.model";
 import { Button } from "@mui/material";
-import { openCreateContactDialog } from "./contact.facade";
+import {
+  openCreateContactDialog,
+  openDeleteContactDialog,
+} from "./contact.facade";
 import { useAuth } from "@/app/context/auth-context";
 import { useConnectionCtx } from "@/app/context/connection-context";
 
@@ -15,15 +16,7 @@ export function ContactPage() {
   const { user } = useAuth();
   const { conn } = useConnectionCtx();
 
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-
   const [contacts, loading] = useContactc(user?.uid || "", conn?.id || "");
-
-  async function handleRemoveContact(contactId: string) {
-    if (!user) return;
-    await deleteContact(contactId);
-    setConfirmDeleteId(null);
-  }
 
   return (
     <>
@@ -51,7 +44,7 @@ export function ContactPage() {
                   primary={contact.name}
                   secondary={contact.phone}
                   onEdit={() => openCreateContactDialog(contact)}
-                  onDelete={() => setConfirmDeleteId(contact.id)}
+                  onDelete={() => openDeleteContactDialog(contact.id)}
                   divider={true}
                 />
               ))}
@@ -64,15 +57,6 @@ export function ContactPage() {
           </Box>
         )}
       </DefaultMenu>
-      <ConfirmDialog
-        open={!!confirmDeleteId}
-        title="Confirmar remoção"
-        message="Tem certeza que deseja remover este contato? Essa ação não pode ser desfeita."
-        onClose={() => setConfirmDeleteId(null)}
-        onConfirm={() => handleRemoveContact(confirmDeleteId!)}
-        confirmText="Remover"
-        confirmColor="error"
-      />
     </>
   );
 }

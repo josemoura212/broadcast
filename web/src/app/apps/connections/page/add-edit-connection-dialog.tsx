@@ -4,7 +4,7 @@ import {
   Connection,
   updateConnection,
 } from "../connection.model";
-import { memo, useEffect } from "react";
+import { memo } from "react";
 import { useAuth } from "@/app/context/auth-context";
 import { useForm } from "react-hook-form";
 import { ControlledTextField } from "@/app/components/controlled-text-field";
@@ -16,7 +16,7 @@ import { Lan } from "@mui/icons-material";
 
 function AddEditConnectionDialog({ connection }: { connection?: Connection }) {
   const { user } = useAuth();
-  const { handleSubmit, setError, reset, control } = useForm({
+  const { handleSubmit, setError, control } = useForm({
     defaultValues: {
       name: connection?.name || "",
     },
@@ -24,13 +24,6 @@ function AddEditConnectionDialog({ connection }: { connection?: Connection }) {
 
   const closeDialog = useCloseDialog();
 
-  useEffect(() => {
-    if (!connection) {
-      reset({ name: "" });
-      return;
-    }
-    reset({ name: connection?.name || "" });
-  }, [connection]);
   return (
     <Paper
       elevation={3}

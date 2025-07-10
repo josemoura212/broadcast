@@ -2,7 +2,7 @@ import { useAuth } from "@/app/context/auth-context";
 import { useConnectionCtx } from "@/app/context/connection-context";
 import { addContact, Contact, updateContact } from "../contact.model";
 import { useForm } from "react-hook-form";
-import { memo, useEffect } from "react";
+import { memo } from "react";
 import { ControlledTextField } from "@/app/components/controlled-text-field";
 import Button from "@mui/material/Button";
 import { useCloseDialog } from "../../dialog/dialog-app";
@@ -15,20 +15,12 @@ function AddEditContactDialog({ contact }: { contact?: Contact }) {
   const { conn } = useConnectionCtx();
   const closeDialog = useCloseDialog();
 
-  const { control, handleSubmit, reset, setError } = useForm({
+  const { control, handleSubmit, setError } = useForm({
     defaultValues: {
       name: contact?.name || "",
       phone: contact?.phone || "",
     },
   });
-
-  useEffect(() => {
-    if (!contact) {
-      reset({ name: "", phone: "" });
-      return;
-    }
-    reset({ name: contact?.name || "", phone: contact?.phone || "" });
-  }, [contact]);
 
   return (
     <Paper

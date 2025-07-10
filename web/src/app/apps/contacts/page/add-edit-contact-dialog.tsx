@@ -10,7 +10,7 @@ import Paper from "@mui/material/Paper";
 import { ContactPage } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 
-function AddEditContactDialog({ contact }: { contact?: Partial<Contact> }) {
+function AddEditContactDialog({ contact }: { contact?: Contact }) {
   const { user } = useAuth();
   const { conn } = useConnectionCtx();
   const closeDialog = useCloseDialog();
@@ -56,8 +56,7 @@ function AddEditContactDialog({ contact }: { contact?: Partial<Contact> }) {
 
           try {
             if (contact) {
-              if (!contact) return;
-              await updateContact(contact.id || "", {
+              await updateContact(contact.id, {
                 name: data.name.trim(),
                 phone: data.phone.trim(),
               });

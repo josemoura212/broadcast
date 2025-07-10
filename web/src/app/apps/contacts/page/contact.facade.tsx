@@ -3,7 +3,7 @@ import { Contact } from "../contact.model";
 import AddEditContactDialog from "./add-edit-contact-dialog";
 import DeleteContactDialog from "./delete-contact-dialog";
 
-export async function openCreateContactDialog(data?: Partial<Contact>) {
+export async function openCreateContactDialog(data?: Contact) {
   openDialog({
     fullWidth: true,
     maxWidth: "xs",

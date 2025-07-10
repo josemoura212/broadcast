@@ -21,7 +21,7 @@ export interface Contact {
   phone: string;
 }
 
-export function useContact(userId: string, connectionId: string) {
+export function useContactc(userId: string, connectionId: string) {
   return useObservable$(
     () =>
       getContacts$(userId, connectionId).pipe(

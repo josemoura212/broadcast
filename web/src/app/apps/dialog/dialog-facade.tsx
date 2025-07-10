@@ -18,6 +18,7 @@ export function openDialog(dialog: DialogType) {
         boxShadow:
           "0px 3px 5px -1px var(--color-theme-dialog-shadow), 0px 3px 5px -1px var(--color-theme-dialog-shadow), 0px 1px 18px 0px var(--color-theme-dialog-shadow)",
       }}
+      className={`${props.className} ${dialog.className}`}
     />
   );
 

@@ -1,4 +1,4 @@
-import { Contact, useContact } from "@/app/apps/contacts/contact.model";
+import { Contact, useContactc } from "@/app/apps/contacts/contact.model";
 import { useAuth } from "@/app/context/auth-context";
 import { useState } from "react";
 import {
@@ -30,7 +30,7 @@ export function useMessagePage(): MessageController {
   const [filter, setFilter] = useState<"enviada" | "agendada" | "all">("all");
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const [contacts] = useContact(user?.uid || "", conn?.id || "");
+  const [contacts] = useContactc(user?.uid || "", conn?.id || "");
   const [messages, loading] = useMessages(
     user?.uid || "",
     conn?.id || "",

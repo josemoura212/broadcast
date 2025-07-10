@@ -8,7 +8,7 @@ import { useConnectionCtx } from "@/app/context/connection-context";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { ControlledTextField } from "@/app/components/controlled-text-field";
 import { ControlledSelect } from "@/app/components/controlled-select";
-import { useContact } from "@/app/apps/contacts/contact.model";
+import { useContactc } from "@/app/apps/contacts/contact.model";
 
 interface MessageFormProps {
   message?: Message | null;
@@ -28,7 +28,7 @@ export function MessageForm(props: MessageFormProps) {
   const { user } = useAuth();
   const { conn } = useConnectionCtx();
 
-  const [contacts] = useContact(user?.uid || "", conn?.id || "");
+  const [contacts] = useContactc(user?.uid || "", conn?.id || "");
 
   const { control, handleSubmit, reset, setError } = useForm<MessageFormData>({
     defaultValues: {

@@ -8,6 +8,7 @@ import { ptBR } from "date-fns/locale";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import { ConnectionProvider } from "./context/connection-context";
+import DialogApp from "./apps/dialog/dialog-app";
 
 export function App() {
   return (
@@ -17,6 +18,7 @@ export function App() {
         <AuthProvider>
           <ConnectionProvider>
             <Router>
+              <DialogApp />
               <AppRoutes />
             </Router>
           </ConnectionProvider>

@@ -1,9 +1,19 @@
 import useBehavior from "@/app/hooks/use-behavior";
 import { closeDialog, dialogs$ } from "./dialog-facade";
-import { createContext, memo } from "react";
+import { createContext, memo, useContext } from "react";
 import MatDialog, { DialogProps } from "@mui/material/Dialog";
 
 const DialogContext = createContext<Partial<DialogProps> | null>(null);
+
+export function useCloseDialog() {
+  const dialog = useContext(DialogContext);
+
+  if (!dialog) {
+    throw new Error("useCloseDialog must be into a DialogContext.Provider!");
+  }
+
+  return () => closeDialog(dialog);
+}
 
 function DialogApp() {
   const dialogs = useBehavior(dialogs$);

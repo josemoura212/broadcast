@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import { useState } from "react";
-import { Message, sendMessageNow, useMessages } from "../message.model";
+import { Message, useMessages } from "../message.model";
 import { MessageFilter } from "./message-filter";
 import { Contact, useContacts } from "@/app/apps/contacts/contact.model";
 import { useAuth } from "@/app/context/auth-context";
@@ -14,6 +14,7 @@ import Divider from "@mui/material/Divider";
 import {
   openAddEditMessageDialog,
   openDeleteMessageDialog,
+  openSendNowMessageDialog,
 } from "./message.facade";
 import { formatDateTimeLocal } from "@/core/utils/date-time";
 
@@ -60,7 +61,7 @@ export function MessagePage() {
                 {...(msg.status === "agendada"
                   ? {
                       onEdit: () => openAddEditMessageDialog(msg),
-                      onSendNow: () => sendMessageNow(msg.id),
+                      onSendNow: () => openSendNowMessageDialog(msg.id),
                     }
                   : {})}
               />

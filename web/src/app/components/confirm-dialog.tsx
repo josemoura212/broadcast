@@ -9,6 +9,7 @@ interface ConfirmDialogProps {
   onClickConfirm: () => void;
   onClose: () => void;
   confirmColor?: "error" | "primary" | "secondary" | "inherit";
+  confirmText?: string;
 }
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
@@ -18,6 +19,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
     onClose,
     title = "Confirmar exclusão",
     confirmColor = "error",
+    confirmText = "Remover",
   } = props;
 
   return (
@@ -40,7 +42,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
             color={confirmColor}
             onClick={onClickConfirm}
           >
-            Remover
+            {confirmText}
           </Button>
         </Box>
       </Box>

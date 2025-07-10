@@ -1,6 +1,6 @@
 import { useAuth } from "../context/auth-context";
 import { useConnectionCtx } from "../context/connection-context";
-import { useConnections } from "@/app/apps/connection/connection.model";
+import { useConnections } from "@/app/apps/connections/connection.model";
 import { useForm } from "react-hook-form";
 import { ControlledSelect } from "./controlled-select";
 import { useEffect } from "react";

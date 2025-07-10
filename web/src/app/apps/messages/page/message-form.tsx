@@ -8,7 +8,7 @@ import { useConnectionCtx } from "@/app/context/connection-context";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { ControlledTextField } from "@/app/components/controlled-text-field";
 import { ControlledSelect } from "@/app/components/controlled-select";
-import { useContact } from "@/app/apps/contact/contact.model";
+import { useContact } from "@/app/apps/contacts/contact.model";
 
 interface MessageFormProps {
   message?: Message | null;

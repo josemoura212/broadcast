@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import { useConnectionPage } from "./use-connection-page";
-import { ConnectionForm } from "../components/connection-form";
+import { ConnectionForm } from "./connection-form";
 import { Connection } from "../connection.model";
 import { useState } from "react";
 

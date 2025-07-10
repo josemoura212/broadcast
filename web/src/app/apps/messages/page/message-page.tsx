@@ -6,11 +6,11 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import { useMessagePage } from "./use-message-page";
-import { MessageForm } from "../components/message-form";
+import { MessageForm } from "./message-form";
 import { useState } from "react";
 import { Message } from "../message.model";
-import { MessageFilter } from "../components/message-filter";
-import { Contact } from "@/app/apps/contact/contact.model";
+import { MessageFilter } from "./message-filter";
+import { Contact } from "@/app/apps/contacts/contact.model";
 
 export function MessagePage() {
   const controller = useMessagePage();

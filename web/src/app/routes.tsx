@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { PrivateRoute } from "./routes/private-route";
-import { ConnectionPage } from "./apps/connection/page/connection-page";
-import { ContactPage } from "./apps/contact/page/contact-page";
-import { MessagePage } from "./apps/message/page/message-page";
+import { ConnectionPage } from "./apps/connections/page/connection-page";
+import { ContactPage } from "./apps/contacts/page/contact-page";
+import { MessagePage } from "./apps/messages/page/message-page";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
 import { Home } from "./pages/home";

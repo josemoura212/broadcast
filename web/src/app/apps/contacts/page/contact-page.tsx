@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import { useContactPage } from "./use-contact-page";
-import { ContactForm } from "../components/contact-form";
+import { ContactForm } from "./contact-form";
 import { useState } from "react";
 import { Contact } from "../contact.model";
 

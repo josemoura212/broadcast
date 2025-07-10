@@ -11,8 +11,8 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { db } from "@/core/services/firebase";
-import { Observable, shareReplay } from "rxjs";
-import { useObservable$ } from "../../hooks/firestore-hooks";
+import { map, shareReplay } from "rxjs";
+import { useObservable$ } from "../../hooks/use-observable";
 import { collectionData } from "rxfire/firestore";
 
 export interface Message {
@@ -27,16 +27,15 @@ export interface Message {
   contactIds: string[];
 }
 
+const MESSAGES_COLLECTION = collection(db, "messages");
+
 export function useMessages(
   userId: string,
   connectionId: string,
   status?: "agendada" | "enviada"
 ) {
   return useObservable$(
-    () =>
-      getMessages$(userId, connectionId, status).pipe(
-        shareReplay({ bufferSize: 1, refCount: true })
-      ),
+    () => getMessages$(userId, connectionId, status),
     [userId, connectionId, status]
   );
 }
@@ -46,18 +45,22 @@ export function getMessages$(
   connectionId: string,
   status?: "agendada" | "enviada"
 ) {
-  return new Observable<Message[]>((subscriber) => {
-    collectionData(
-      query(
-        collection(db, "messages"),
-        where("userId", "==", userId),
-        where("connectionId", "==", connectionId),
-        ...(status ? [where("status", "==", status)] : []),
-        orderBy("createdAt", "desc")
-      ),
-      { idField: "id" }
-    ).subscribe((data) => subscriber.next(data as Message[]));
-  });
+  return collectionData(
+    query(
+      MESSAGES_COLLECTION,
+      where("userId", "==", userId),
+      where("connectionId", "==", connectionId),
+      ...(status ? [where("status", "==", status)] : []),
+      orderBy("createdAt", "desc")
+    ),
+    { idField: "id" }
+  ).pipe(
+    shareReplay({
+      bufferSize: 1,
+      refCount: false,
+    }),
+    map((data) => data as Message[])
+  );
 }
 
 export async function addMessage(params: {
@@ -68,7 +71,7 @@ export async function addMessage(params: {
   scheduledAt?: Date | null;
 }): Promise<void> {
   const { userId, connectionId, content, contactIds, scheduledAt } = params;
-  await addDoc(collection(db, "messages"), {
+  await addDoc(MESSAGES_COLLECTION, {
     content,
     userId,
     connectionId,
@@ -90,7 +93,7 @@ export async function updateMessage(
     sentAt?: Date;
   }
 ): Promise<void> {
-  const docRef = doc(collection(db, "messages"), messageId);
+  const docRef = doc(MESSAGES_COLLECTION, messageId);
 
   const snap = await getDoc(docRef);
   if (!snap.exists()) {
@@ -113,12 +116,12 @@ export async function updateMessage(
 }
 
 export async function deleteMessage(messageId: string): Promise<void> {
-  const docRef = doc(collection(db, "messages"), messageId);
+  const docRef = doc(MESSAGES_COLLECTION, messageId);
   await deleteDoc(docRef);
 }
 
 export async function sendMessageNow(messageId: string): Promise<void> {
-  const docRef = doc(collection(db, "messages"), messageId);
+  const docRef = doc(MESSAGES_COLLECTION, messageId);
   const snap = await getDoc(docRef);
   if (!snap.exists()) {
     throw new Error("Mensagem não encontrada");

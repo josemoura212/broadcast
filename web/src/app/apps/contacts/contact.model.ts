@@ -9,8 +9,8 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { db } from "@/core/services/firebase";
-import { useObservable$ } from "@/app/hooks/firestore-hooks";
-import { Observable, shareReplay } from "rxjs";
+import { useObservable$ } from "@/app/hooks/use-observable";
+import { map, shareReplay } from "rxjs";
 import { collectionData } from "rxfire/firestore";
 
 export interface Contact {
@@ -21,28 +21,28 @@ export interface Contact {
   phone: string;
 }
 
-export function useContactc(userId: string, connectionId: string) {
+const CONTACTS_COLLECTION = collection(db, "contacts");
+
+export function useContacts(userId: string, connectionId: string) {
   return useObservable$(
-    () =>
-      getContacts$(userId, connectionId).pipe(
-        shareReplay({ bufferSize: 1, refCount: true })
-      ),
+    () => getContacts$(userId, connectionId),
     [userId, connectionId]
   );
 }
 
 export function getContacts$(userId: string, connectionId: string) {
-  return new Observable<Contact[]>((subscriber) => {
-    collectionData(
-      query(
-        collection(db, "contacts"),
-        where("userId", "==", userId),
-        where("connectionId", "==", connectionId),
-        orderBy("name")
-      ),
-      { idField: "id" }
-    ).subscribe((data) => subscriber.next(data as Contact[]));
-  });
+  return collectionData(
+    query(
+      CONTACTS_COLLECTION,
+      where("userId", "==", userId),
+      where("connectionId", "==", connectionId),
+      orderBy("name")
+    ),
+    { idField: "id" }
+  ).pipe(
+    shareReplay({ bufferSize: 1, refCount: false }),
+    map((data) => data as Contact[])
+  );
 }
 
 export async function addContact(contact: {
@@ -51,11 +51,11 @@ export async function addContact(contact: {
   name: string;
   phone: string;
 }): Promise<void> {
-  await addDoc(collection(db, "contacts"), contact);
+  await addDoc(CONTACTS_COLLECTION, contact);
 }
 
 export async function deleteContact(contactId: string): Promise<void> {
-  const docRef = doc(db, "contacts", contactId);
+  const docRef = doc(CONTACTS_COLLECTION, contactId);
   await deleteDoc(docRef);
 }
 
@@ -66,6 +66,6 @@ export async function updateContact(
     phone: string;
   }
 ): Promise<void> {
-  const docRef = doc(collection(db, "contacts"), contactId);
+  const docRef = doc(CONTACTS_COLLECTION, contactId);
   await updateDoc(docRef, contact);
 }

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useAuth } from "@/app/context/auth-context";
 import { openAddEditConnectionDialog } from "./connection.facade";
 import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 
 export function ConnectionPage() {
   const { user } = useAuth();
@@ -38,6 +39,7 @@ export function ConnectionPage() {
             Criar Conexão
           </Button>
         </Box>
+        <Divider />
         {loading ? (
           <Typography>Carregando...</Typography>
         ) : (

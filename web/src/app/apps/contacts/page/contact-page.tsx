@@ -3,20 +3,21 @@ import { ActionListItem } from "@/app/components/action-list-item";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
-import { useContactc } from "../contact.model";
-import { Button } from "@mui/material";
 import {
   openCreateContactDialog,
   openDeleteContactDialog,
 } from "./contact.facade";
 import { useAuth } from "@/app/context/auth-context";
 import { useConnectionCtx } from "@/app/context/connection-context";
+import { useContacts } from "../contact.model";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 
 export function ContactPage() {
   const { user } = useAuth();
   const { conn } = useConnectionCtx();
 
-  const [contacts, loading] = useContactc(user?.uid || "", conn?.id || "");
+  const [contacts, loading] = useContacts(user?.uid || "", conn?.id || "");
 
   return (
     <>
@@ -33,6 +34,7 @@ export function ContactPage() {
             Criar Contato
           </Button>
         </Box>
+        <Divider />
         {loading ? (
           <Typography>Carregando...</Typography>
         ) : (

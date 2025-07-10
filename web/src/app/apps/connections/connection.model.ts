@@ -9,8 +9,8 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/core/services/firebase";
-import { Observable, shareReplay } from "rxjs";
-import { useObservable$ } from "@/app/hooks/firestore-hooks";
+import { map, shareReplay } from "rxjs";
+import { useObservable$ } from "@/app/hooks/use-observable";
 import { collectionData } from "rxfire/firestore";
 
 export interface Connection {
@@ -19,41 +19,38 @@ export interface Connection {
   name: string;
 }
 
+const CONNECTIONS_COLLECTION = collection(db, "connections");
+
 export function useConnections(userId: string) {
-  return useObservable$(
-    () =>
-      getConnections$(userId).pipe(
-        shareReplay({ bufferSize: 1, refCount: true })
-      ),
-    [userId]
-  );
+  return useObservable$(() => getConnections$(userId), [userId]);
 }
 
 export function getConnections$(userId: string) {
-  return new Observable<Connection[]>((subscriber) => {
-    collectionData(
-      query(
-        collection(db, "connections"),
-        where("userId", "==", userId),
-        orderBy("name")
-      ),
-      { idField: "id" }
-    ).subscribe((data) => subscriber.next(data as Connection[]));
-  });
+  return collectionData(
+    query(
+      CONNECTIONS_COLLECTION,
+      where("userId", "==", userId),
+      orderBy("name")
+    ),
+    { idField: "id" }
+  ).pipe(
+    shareReplay({ bufferSize: 1, refCount: false }),
+    map((data) => data as Connection[])
+  );
 }
 
 export async function addConnection(
   userId: string,
   connectionName: string
 ): Promise<void> {
-  await addDoc(collection(db, "connections"), {
+  await addDoc(CONNECTIONS_COLLECTION, {
     userId,
     name: connectionName,
   });
 }
 
 export async function deleteConnection(connectionId: string): Promise<void> {
-  const docref = doc(collection(db, "connections"), connectionId);
+  const docref = doc(CONNECTIONS_COLLECTION, connectionId);
   await deleteDoc(docref);
 }
 
@@ -61,6 +58,6 @@ export async function updateConnection(
   connectionId: string,
   connectionName: string
 ): Promise<void> {
-  const docref = doc(collection(db, "connections"), connectionId);
+  const docref = doc(CONNECTIONS_COLLECTION, connectionId);
   await updateDoc(docref, { name: connectionName });
 }
